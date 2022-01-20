@@ -1,17 +1,47 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Version details.
+ *
+ * @package     local_extended_learning_analytics
+ * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
-require(__DIR__ . '/../../learning_analytics/classes/local/outputs/plot.php');
-require(__DIR__ . '/../../learning_analytics/classes/report_base.php');
-require(__DIR__ . '/../../learning_analytics/reports/coursedashboard/classes/query_helper.php');
+//defined('MOODLE_INTERNAL') || die();
 
-class extended_learning_analytics_coursedashboard {
+require(__DIR__ . '/../../../learning_analytics/reports/coursedashboard/lareport_coursedashboard.php');
+var_dump("test");
+
+use local_learning_analytics\local\outputs\plot;
+use local_learning_analytics\report_base;
+use lareport_coursedashboard\query_helper;
+use local_learning_analytics\settings;
+
+//$extended_learning_analytics_dashboard = new extended_learning_analytics_dashboard();
+//$extended_learning_analytics_dashboard->run([]);
+
+class extended_learning_analytics_dashboard extends report_base {
 
     const X_MIN = -1;
     const X_MAX = 30;
 
     public function activiyoverweeks() : array {
+        var_dump("test");
         $course = get_course(89);
 
         $date = new DateTime();
@@ -63,13 +93,6 @@ class extended_learning_analytics_coursedashboard {
 
         $tickvals = [];
         $ticktext = [];
-
-        /*$dateformat = get_string('strftimedate', 'langconfig');
-        $thousandssep = get_string('thousandssep', 'langconfig');
-        $decsep = get_string('decsep', 'langconfig');
-
-        $tstrweek = get_string('week', 'extended_learning_analytics_coursedashboard');
-        $strclicks = get_string('clicks', 'extended_learning_analytics_coursedashboard');*/
 
         $date->modify(($xmin - 1) . ' week');
 
@@ -156,7 +179,7 @@ class extended_learning_analytics_coursedashboard {
         $plot->add_series([
             'type' => 'scatter',
             'mode' => 'lines+markers',
-            'name' => get_string('clicks', 'extended_learning_analytics_coursedashboard'),
+            'name' => get_string('clicks', 'extended_learning_analytics_dashboard'),
             'x' => $x,
             'y' => $yclicks,
             'text' => $texts,
@@ -219,7 +242,7 @@ class extended_learning_analytics_coursedashboard {
     public function run(array $params): array {
         var_dump("test");
         global $PAGE, $DB, $OUTPUT, $CFG;
-        $PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/styles.css?3');
+        //$PAGE->requires->css(__DIR__ . '/../../../local/learning_analytics/reports/coursedashboard/static/styles.css?3');
 
         var_dump(activiyoverweeks());
     }
