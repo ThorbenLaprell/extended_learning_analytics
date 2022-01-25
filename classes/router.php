@@ -81,6 +81,7 @@ class router {
 
         $uri = new moodle_url($url);
         $slashargs = str_replace($uri->get_path(false), '', $uri->get_path(true));
+        return $slashargs;
 
         $instance = null;
         $reportname = null;
