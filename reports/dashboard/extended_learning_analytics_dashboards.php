@@ -15,27 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version info for the Sections report
+ * Version details.
  *
- * @package     local_learning_analytics
+ * @package     local_extended_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require(__DIR__ . '/../../../../config.php');
+
 defined('MOODLE_INTERNAL') || die();
+
+//require(__DIR__ . '/../../../learning_analytics/reports/coursedashboard/lareport_coursedashboard.php');
+var_dump("test");
 
 use \local_learning_analytics\local\outputs\plot;
 use \local_learning_analytics\report_base;
 use \lareport_coursedashboard\query_helper;
 use \local_learning_analytics\settings;
 
-class lareport_coursedashboard extends report_base {
+//7$extended_learning_analytics_dashboard = new extended_learning_analytics_dashboard();
+//$extended_learning_analytics_dashboard->run([]);
+
+class extended_learning_analytics_dashboard extends report_base {
 
     const X_MIN = -1;
     const X_MAX = 30;
 
-    private function activiyoverweeks(int $courseid) : array {
-        $course = get_course($courseid);
+    public function activiyoverweeks() : array {
+        var_dump("test");
+        $course = get_course(89);
 
         $date = new DateTime();
         $date->modify('-1 week');
@@ -47,9 +56,10 @@ class lareport_coursedashboard extends report_base {
         $endoflastweek = new DateTime();
         $endoflastweek->modify('Sunday last week');
 
-        $weeks = query_helper::query_weekly_activity($courseid);
+        $query_helper = new query_helper();
+        $weeks = $query_helper->query_weekly_activity(89);
 
-        $privacythreshold = settings::get_config('dataprivacy_threshold');
+        $privacythreshold = 1;
 
         $plot = new plot();
         $x = [];
@@ -86,13 +96,6 @@ class lareport_coursedashboard extends report_base {
         $tickvals = [];
         $ticktext = [];
 
-        $dateformat = get_string('strftimedate', 'langconfig');
-        $thousandssep = get_string('thousandssep', 'langconfig');
-        $decsep = get_string('decsep', 'langconfig');
-
-        $tstrweek = get_string('week', 'lareport_coursedashboard');
-        $strclicks = get_string('clicks', 'lareport_coursedashboard');
-
         $date->modify(($xmin - 1) . ' week');
 
         $lastweekinpast = -100;
@@ -118,8 +121,8 @@ class lareport_coursedashboard extends report_base {
                 // Date is in the past.
                 $yclicks[] = $clickcount;
 
-                $weekstarttext = userdate($startofweektimestamp, $dateformat);
-                $weekendtext = userdate($date->getTimestamp(), $dateformat);
+                $weekstarttext = 'T';
+                $weekendtext = 'N';
                 $textClicks = $clickcount;
                 if ($clickcount < $privacythreshold) {
                     $textClicks = "< {$privacythreshold}";
@@ -178,7 +181,7 @@ class lareport_coursedashboard extends report_base {
         $plot->add_series([
             'type' => 'scatter',
             'mode' => 'lines+markers',
-            'name' => get_string('clicks', 'lareport_coursedashboard'),
+            'name' => get_string('clicks', 'extended_learning_analytics_dashboard'),
             'x' => $x,
             'y' => $yclicks,
             'text' => $texts,
@@ -239,48 +242,11 @@ class lareport_coursedashboard extends report_base {
     }
 
     public function run(array $params): array {
+        var_dump("test");
         global $PAGE, $DB, $OUTPUT, $CFG;
-        $PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/styles.css?3');
+        //$PAGE->requires->css(__DIR__ . '/../../../local/learning_analytics/reports/coursedashboard/static/styles.css?3');
 
-        $courseid = $params['course'];
-
-        $helpurl = new moodle_url('/local/learning_analytics/help.php', ['course' => $courseid]);
-        $icon = \html_writer::link($helpurl,
-            $OUTPUT->pix_icon('e/help', get_string('help', 'lareport_coursedashboard'), 'moodle', ['class' => 'helpicon'])
-        );
-        $helpprefix = "<div class='headingfloater'>{$icon}</div>";
-
-
-        $previewboxes = settings::get_config('dashboard_boxes');
-        $splitpreviewkeys = explode(',', $previewboxes);
-
-        $subpluginsboxes = [];
-        echo $splitpreviewkeys;
-        foreach ($splitpreviewkeys as $plugininfo) {
-            $pluginsplit = explode(':', $plugininfo);
-            $pluginkey = $pluginsplit[0];
-            $pluginsize = intval($pluginsplit[1]);
-            $previewfile = "{$CFG->dirroot}/local/learning_analytics/reports/{$pluginkey}/classes/preview.php";
-            if (file_exists($previewfile)) {
-                include_once($previewfile);
-                $previewClass = "lareport_{$pluginkey}\\preview";
-                $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content($params), ["</div>"]);
-            }
-        }
-
-        return array_merge(
-            [self::heading(get_string('pluginname', 'lareport_coursedashboard'), true, $helpprefix)],
-            $this->activiyoverweeks($courseid),
-            ["<div class='row reportboxes'>"],
-            $subpluginsboxes,
-            ["</div>"]
-        );
-    }
-
-    public function params(): array {
-        return [
-            'course' => required_param('course', PARAM_INT)
-        ];
+        var_dump(activiyoverweeks());
     }
 
 }

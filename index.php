@@ -1,5 +1,4 @@
 <?php
-header(__DIR__ . '/reports/dashboard/extended_learning_analytics_dashboard.php');
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,17 +22,106 @@ header(__DIR__ . '/reports/dashboard/extended_learning_analytics_dashboard.php')
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_extended_learning_analytics\router;
 
- //use local_extended_learning_analytics\reports\dashboard;
-
- //var_dump(testclassdashboard::testme());
- /*
- defined('MOODLE_INTERNAL') || die;
- 
 require(__DIR__ . '/../../config.php');
-require(__DIR__ . '/../learning_analytics/testfunction.php');
-require(__DIR__ . '/reports/extended_learning_analytics_dashboard.php');
+
+defined('MOODLE_INTERNAL') || die;
 
 require_login();
-$extended_learning_analytics = new extended_learning_analytics_dashboard();
-var_dump($extended_learning_analytics->activiyoverweeks());*/
+
+global $PAGE, $USER, $DB;
+
+$courseid = 30;
+$showtour = optional_param('tour', 0, PARAM_INT) === 1;
+$context = context_course::instance($courseid, MUST_EXIST);
+
+if ($courseid == SITEID) {
+    throw new moodle_exception('invalidcourse');
+}
+
+// status: 'show_if_enabled', 'show_courseids', 'show_always', 'hide_link', 'disable'
+$statussetting = get_config('local_learning_analytics', 'status');
+    
+if ($statussetting === 'course_customfield') {
+    $customfieldid = (int) get_config('local_learning_analytics', 'customfieldid');
+    $record = $DB->get_record('customfield_data', [
+        'fieldid' => $customfieldid,
+        'instanceid' => $courseid,
+    ], 'intvalue');
+    if ($record === false || $record->intvalue !== '1') {
+        throw new moodle_exception('Learning Analytics is not enabled (for this course).');
+    }
+} else if ($statussetting === 'disable') {
+    throw new moodle_exception('Learning Analytics is not enabled (for this course).');
+} else if ($statussetting === 'show_always' || $statussetting === 'hide_link') {
+    // just show it, don't filter anything
+} else if ($statussetting === 'show_courseids') {
+    // use courseids of this plugin
+    $courseids = get_config('local_learning_analytics', 'course_ids');
+    if ($courseids === false || $courseids === '') {
+        $courseids = [];
+    } else {
+        $courseids = array_map('trim', explode(',', $courseids));
+    }
+    if (!in_array($courseid, $courseids)) {
+        throw new moodle_exception('Learning Analytics is not enabled (for this course).');
+    }
+} else { // default setting: 'show_if_enabled'
+    // check if the logstore plugin is enabled, otherwise hide link
+    $logstoresstr = get_config('tool_log', 'enabled_stores');
+    $logstores = $logstoresstr ? explode(',', $logstoresstr) : [];
+    if (!in_array('logstore_lanalytics', $logstores)) {
+        throw new moodle_exception('Learning Analytics is not enabled (for this course).');
+    }
+    // logging is enabled, check logging scope
+    $logscope = get_config('logstore_lanalytics', 'log_scope');
+    if ($logscope !== false && $logscope !== '' && $logscope !== 'all') {
+        // scope is not all -> check if course should be tracked
+        $courseids = get_config('logstore_lanalytics', 'course_ids');
+        if ($courseids === false || $courseids === '') {
+            $courseids = [];
+        } else {
+            $courseids = array_map('trim', explode(',', $courseids));
+        }
+        if (($logscope === 'include' && !in_array($courseid, $courseids))
+            || ($logscope === 'exclude' && in_array($courseid, $courseids))) {
+            throw new moodle_exception('Learning Analytics is not enabled (for this course).');
+        }
+    }
+}
+
+$PAGE->set_context($context);
+
+// Set URL to main path of analytics.
+$currentparams = ['course' => $courseid];
+if ($showtour) {
+    $currentparams = ['tour' => 1, 'course' => $courseid];
+}
+$url = new moodle_url('/local/extended_learning_analytics/index.php/reports/extended_learning_analytics_dashboard', $currentparams);
+$PAGE->set_url($url);
+
+// For now, all statistics are shown on course level.
+$course = get_course($courseid);
+$PAGE->set_course($course);
+
+// Header of page (we simply use the course name to be consitent with other pages)
+$PAGE->set_pagelayout('course');
+$PAGE->set_heading($course->fullname);
+
+// title of page.
+$coursename = format_string($course->fullname, true, array('context' => context_course::instance($course->id)));
+$title = $coursename . ': ' . get_string('navigation_link', 'local_learning_analytics');
+$PAGE->set_title($title);
+
+$resultinghtml = router::run($_SERVER['REQUEST_URI']);
+
+$output = $PAGE->get_renderer('local_learning_analytics');
+
+$PAGE->requires->css('/local/learning_analytics/static/styles.css?4');
+$mainoutput = $output->render_from_template('local_learning_analytics/course', [
+    'content' => $resultinghtml
+]);
+echo $output->header();
+echo $mainoutput;
+echo $output->footer();

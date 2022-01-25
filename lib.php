@@ -37,7 +37,7 @@ function local_extended_learning_analytics_extend_navigation(global_navigation $
 
     if (has_capability('local/extended_learning_analytics:view_statistics', $context, $USER->id)) {
         $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-        $thingnode = $coursenode->add(get_string('navigation_link', 'local_extended_learning_analytics'), new moodle_url('/local/extended_learning_analytics/reports/dashboard/extended_learning_analytics_dashboard.php'));
+        $thingnode = $coursenode->add(get_string('navigation_link', 'local_extended_learning_analytics'), new moodle_url('/local/extended_learning_analytics/index.php'));
         $thingnode->make_active();
     }
 
