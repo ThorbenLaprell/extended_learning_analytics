@@ -1,29 +1,4 @@
-object(moodle_url)#54 (9) {
-  ["scheme":protected]=>
-  string(4) "http"
-  ["host":protected]=>
-  string(9) "localhost"
-  ["port":protected]=>
-  string(0) ""
-  ["user":protected]=>
-  string(0) ""
-  ["pass":protected]=>
-  string(0) ""
-  ["path":protected]=>
-  string(129) "/moodle/local/extended_learning_analytics/reports/extended_learning_analytics_dashboard/extended_learning_analytics_dashboard.php"
-  ["slashargument":protected]=>
-  string(0) ""
-  ["anchor":protected]=>
-  NULL
-  ["params":protected]=>
-  array(1) {
-    ["course"]=>
-    string(2) "14"
-  }
-}
-string(51) "/moodle/local/extended_learning_analytics/index.php"
-string(4) "test"
-string(0) ""
+string(100) "C:\xampp\htdocs\moodle/local/learning_analytics/reports/coursedashboard\lareport_coursedashboard.php"
 
 
 
