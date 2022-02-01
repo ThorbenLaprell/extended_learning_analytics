@@ -101,7 +101,7 @@ if ($showtour) {
 $url = new moodle_url('/local/extended_learning_analytics/reports/extended_learning_analytics_dashboard/extended_learning_analytics_dashboard.php', $currentparams);
 //var_dump($url);
 $PAGE->set_url($url);
-var_dump($PAGE->url);
+//var_dump($PAGE->url);
 
 // For now, all statistics are shown on course level.
 $course = get_course($courseid);
@@ -116,10 +116,10 @@ $coursename = format_string($course->fullname, true, array('context' => context_
 $title = $coursename . ': ' . get_string('navigation_link', 'local_extended_learning_analytics');
 $PAGE->set_title($title);
 
-var_dump($_SERVER['REQUEST_URI']);
+//var_dump($_SERVER['REQUEST_URI']);
 
 $resultinghtml = router::run($_SERVER['REQUEST_URI']);
-var_dump($resultinghtml);
+//var_dump($resultinghtml);
 
 $output = $PAGE->get_renderer('local_learning_analytics');
 

@@ -80,8 +80,9 @@ class router {
         $reportpageregex = '/^\/reports\/([a-zA-Z0-9_]+)\/([a-zA-Z0-9_]+)(\?.*)?$/';
 
         $uri = new moodle_url($url);
+        var_dump($uri);
         $slashargs = str_replace($uri->get_path(false), '', $uri->get_path(true));
-        return $slashargs;
+        var_dump($slashargs);
 
         $instance = null;
         $reportname = null;
@@ -89,14 +90,14 @@ class router {
         if (preg_match($reportpageregex, $slashargs, $matches)) { // Page of report was called.
             $reportname = $matches[1];
             $pagename = $matches[2];
-            $fqcn = "\\lareport_{$reportname}\\{$pagename}";
+            $fqcn = "\\extended_learning_analytics_{$reportname}\\{$pagename}";
             if (class_exists($fqcn)) {
                 $instance = new $fqcn();
             }
         } else if (preg_match($reportregex, $slashargs, $matches)) { // Report was called.
             $reportname = $matches[1];
-            $path = core_component::get_plugin_directory('lareport', $reportname);
-            $fqp = $path . DIRECTORY_SEPARATOR . "lareport_{$reportname}.php";
+            $path = core_component::get_plugin_directory('extended_learning_analytics', $reportname);
+            $fqp = $path . DIRECTORY_SEPARATOR . "extended_learning_analytics_{$reportname}.php";
             if (file_exists($fqp)) {
                 require($fqp);
                 $class = "lareport_{$reportname}";
