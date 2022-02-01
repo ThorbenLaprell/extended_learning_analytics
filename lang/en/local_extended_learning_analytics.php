@@ -26,3 +26,4 @@
 $string['pluginname'] = 'Local extended_learning_analytics';
 $string['local_extend_learning_analytics'] = 'Local extended_learning_analytics';
 $string['navigation_link'] = 'extended_learning_analytics';
+$string['navigationlink'] = 'extended_learning_analytics';

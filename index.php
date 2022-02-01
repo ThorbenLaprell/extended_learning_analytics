@@ -32,7 +32,7 @@ require_login();
 
 global $PAGE, $USER, $DB;
 
-$courseid = 30;
+$courseid = 14;
 $showtour = optional_param('tour', 0, PARAM_INT) === 1;
 $context = context_course::instance($courseid, MUST_EXIST);
 
@@ -113,7 +113,7 @@ $PAGE->set_heading($course->fullname);
 
 // title of page.
 $coursename = format_string($course->fullname, true, array('context' => context_course::instance($course->id)));
-$title = $coursename . ': ' . get_string('navigation_link', 'local_learning_analytics');
+$title = $coursename . ': ' . get_string('navigation_link', 'local_extended_learning_analytics');
 $PAGE->set_title($title);
 
 var_dump($_SERVER['REQUEST_URI']);
