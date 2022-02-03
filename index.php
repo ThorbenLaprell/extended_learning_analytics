@@ -32,64 +32,9 @@ require_login();
 
 global $PAGE, $USER, $DB;
 
-$courseid = 14;
+$courseid = 30;
 $showtour = optional_param('tour', 0, PARAM_INT) === 1;
 $context = context_course::instance($courseid, MUST_EXIST);
-
-if ($courseid == SITEID) {
-    throw new moodle_exception('invalidcourse');
-}
-
-// status: 'show_if_enabled', 'show_courseids', 'show_always', 'hide_link', 'disable'
-$statussetting = get_config('local_learning_analytics', 'status');
-    
-if ($statussetting === 'course_customfield') {
-    $customfieldid = (int) get_config('local_learning_analytics', 'customfieldid');
-    $record = $DB->get_record('customfield_data', [
-        'fieldid' => $customfieldid,
-        'instanceid' => $courseid,
-    ], 'intvalue');
-    if ($record === false || $record->intvalue !== '1') {
-        throw new moodle_exception('Learning Analytics is not enabled (for this course).');
-    }
-} else if ($statussetting === 'disable') {
-    throw new moodle_exception('Learning Analytics is not enabled (for this course).');
-} else if ($statussetting === 'show_always' || $statussetting === 'hide_link') {
-    // just show it, don't filter anything
-} else if ($statussetting === 'show_courseids') {
-    // use courseids of this plugin
-    $courseids = get_config('local_learning_analytics', 'course_ids');
-    if ($courseids === false || $courseids === '') {
-        $courseids = [];
-    } else {
-        $courseids = array_map('trim', explode(',', $courseids));
-    }
-    if (!in_array($courseid, $courseids)) {
-        throw new moodle_exception('Learning Analytics is not enabled (for this course).');
-    }
-} else { // default setting: 'show_if_enabled'
-    // check if the logstore plugin is enabled, otherwise hide link
-    $logstoresstr = get_config('tool_log', 'enabled_stores');
-    $logstores = $logstoresstr ? explode(',', $logstoresstr) : [];
-    if (!in_array('logstore_lanalytics', $logstores)) {
-        throw new moodle_exception('Learning Analytics is not enabled (for this course).');
-    }
-    // logging is enabled, check logging scope
-    $logscope = get_config('logstore_lanalytics', 'log_scope');
-    if ($logscope !== false && $logscope !== '' && $logscope !== 'all') {
-        // scope is not all -> check if course should be tracked
-        $courseids = get_config('logstore_lanalytics', 'course_ids');
-        if ($courseids === false || $courseids === '') {
-            $courseids = [];
-        } else {
-            $courseids = array_map('trim', explode(',', $courseids));
-        }
-        if (($logscope === 'include' && !in_array($courseid, $courseids))
-            || ($logscope === 'exclude' && in_array($courseid, $courseids))) {
-            throw new moodle_exception('Learning Analytics is not enabled (for this course).');
-        }
-    }
-}
 
 $PAGE->set_context($context);
 
@@ -98,7 +43,7 @@ $currentparams = ['course' => $courseid];
 if ($showtour) {
     $currentparams = ['tour' => 1, 'course' => $courseid];
 }
-$url = new moodle_url('/local/extended_learning_analytics/reports/extended_learning_analytics_dashboard/extended_learning_analytics_dashboard.php', $currentparams);
+$url = new moodle_url('/local/extended_learning_analytics/index.php/reports/dashboard', $currentparams);
 //var_dump($url);
 $PAGE->set_url($url);
 //var_dump($PAGE->url);
@@ -118,7 +63,7 @@ $PAGE->set_title($title);
 
 //var_dump($_SERVER['REQUEST_URI']);
 
-$resultinghtml = router::run($_SERVER['REQUEST_URI']);
+$resultinghtml = router::run($_SERVER['REQUEST_URI'] . "/reports/dashboard?course=30");
 //var_dump($resultinghtml);
 
 $output = $PAGE->get_renderer('local_learning_analytics');

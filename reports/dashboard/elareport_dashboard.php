@@ -29,7 +29,7 @@ use \local_learning_analytics\report_base;
 use \lareport_coursedashboard\query_helper;
 use \local_learning_analytics\settings;
 
-class lareport_coursedashboard extends report_base {
+class elareport_dashboard extends report_base {
 
     const X_MIN = -1;
     const X_MAX = 30;

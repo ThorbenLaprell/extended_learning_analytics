@@ -15,23 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Strings for lareport_coursedashboard
  *
- * @package     local_extended_learning_analytics
+ * @package     local_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+$string['pluginname'] = 'Extended Learning Analytics Dashboard';
 
-$plugin->component = 'local_extended_learning_analytics';
+$string['privacy:metadata'] = 'This plugin does not store any personal data.';
 
-$plugin->version = 2021111515;
-$plugin->release = 'v0.1.0';
-$plugin->maturity = MATURITY_STABLE;
+$string['clicks'] = 'hits';
+$string['sessions'] = 'Sessions';
+$string['learners'] = 'Learners';
 
-$plugin->requires = 2017111302;
+$string['clicks_compare'] = 'Sessions (compared)';
 
-$plugin->dependencies = [
-    'local_learning_analytics' => 2020101608,
-];
+$string['week'] = 'Week';
+$string['parameter:course'] = 'Course';
+
+$string['set'] = 'Set';
+$string['not_available'] = 'N/A';
+$string['last_7_days'] = 'Last 7 days';
+$string['total'] = 'Total';
+$string['no_difference'] = 'No change';
+$string['compared_to_previous_week'] = 'Compared to the previous 7 days';
+
+$string['help'] = 'Help';

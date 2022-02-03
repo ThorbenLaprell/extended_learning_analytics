@@ -15,23 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Version info for the Sections Report
  *
- * @package     local_extended_learning_analytics
+ * @package     local_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_extended_learning_analytics';
+$plugin->component = 'elareport_dashboard';
 
-$plugin->version = 2021111515;
-$plugin->release = 'v0.1.0';
-$plugin->maturity = MATURITY_STABLE;
-
-$plugin->requires = 2017111302;
-
-$plugin->dependencies = [
-    'local_learning_analytics' => 2020101608,
-];
+$plugin->version = '2018052500';
+$plugin->requires = '2017111302';

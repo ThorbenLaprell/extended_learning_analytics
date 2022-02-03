@@ -80,9 +80,9 @@ class router {
         $reportpageregex = '/^\/reports\/([a-zA-Z0-9_]+)\/([a-zA-Z0-9_]+)(\?.*)?$/';
 
         $uri = new moodle_url($url);
-        var_dump($uri);
+        //var_dump($uri);
         $slashargs = str_replace($uri->get_path(false), '', $uri->get_path(true));
-        var_dump($slashargs);
+        //var_dump($slashargs);
 
         $instance = null;
         $reportname = null;
@@ -90,17 +90,19 @@ class router {
         if (preg_match($reportpageregex, $slashargs, $matches)) { // Page of report was called.
             $reportname = $matches[1];
             $pagename = $matches[2];
-            $fqcn = "\\extended_learning_analytics_{$reportname}\\{$pagename}";
+            $fqcn = "\\elareport_{$reportname}\\{$pagename}";
             if (class_exists($fqcn)) {
                 $instance = new $fqcn();
             }
         } else if (preg_match($reportregex, $slashargs, $matches)) { // Report was called.
             $reportname = $matches[1];
-            $path = core_component::get_plugin_directory('extended_learning_analytics', $reportname);
-            $fqp = $path . DIRECTORY_SEPARATOR . "extended_learning_analytics_{$reportname}.php";
+            var_dump($reportname);
+            $path = core_component::get_plugin_directory('elareport', $reportname);
+            var_dump($path);
+            $fqp = $path . DIRECTORY_SEPARATOR . "elareport_{$reportname}.php";
             if (file_exists($fqp)) {
                 require($fqp);
-                $class = "lareport_{$reportname}";
+                $class = "elareport_{$reportname}";
                 $instance = (new $class());
             }
         }
@@ -113,7 +115,7 @@ class router {
 
     private static function get_url(string $slash, array $query) : moodle_url {
         $params = empty($query) ? '' : '?' . http_build_query($query);
-        return new moodle_url("/local/learning_analytics/index.php/reports{$slash}{$params}");
+        return new moodle_url("/local/extended_learning_analytics/index.php/reports{$slash}{$params}");
     }
 
     /**
