@@ -45,7 +45,7 @@ class router {
         $outputs = $instance->run($params);
 
         $title = get_string('pluginname', "lareport_{$reportname}");
-        if ($reportname !== 'coursedashboard') { // TODO dont hardcode this, set default for main report somewhere.
+        if ($reportname !== 'dashboard') { // TODO dont hardcode this, set default for main report somewhere.
             $PAGE->navbar->add($title, self::report($reportname, $params));
         }
 
@@ -80,9 +80,7 @@ class router {
         $reportpageregex = '/^\/reports\/([a-zA-Z0-9_]+)\/([a-zA-Z0-9_]+)(\?.*)?$/';
 
         $uri = new moodle_url($url);
-        //var_dump($uri);
         $slashargs = str_replace($uri->get_path(false), '', $uri->get_path(true));
-        //var_dump($slashargs);
 
         $instance = null;
         $reportname = null;
@@ -96,9 +94,7 @@ class router {
             }
         } else if (preg_match($reportregex, $slashargs, $matches)) { // Report was called.
             $reportname = $matches[1];
-            var_dump($reportname);
             $path = core_component::get_plugin_directory('elareport', $reportname);
-            var_dump($path);
             $fqp = $path . DIRECTORY_SEPARATOR . "elareport_{$reportname}.php";
             if (file_exists($fqp)) {
                 require($fqp);

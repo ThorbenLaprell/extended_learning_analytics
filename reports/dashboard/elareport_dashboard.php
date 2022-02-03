@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use \local_learning_analytics\local\outputs\plot;
 use \local_learning_analytics\report_base;
-use \lareport_coursedashboard\query_helper;
+use elareport_dashboard\query_helper;
 use \local_learning_analytics\settings;
 
 class elareport_dashboard extends report_base {
@@ -255,7 +255,7 @@ class elareport_dashboard extends report_base {
         $splitpreviewkeys = explode(',', $previewboxes);
 
         $subpluginsboxes = [];
-        echo $splitpreviewkeys;
+
         foreach ($splitpreviewkeys as $plugininfo) {
             $pluginsplit = explode(':', $plugininfo);
             $pluginkey = $pluginsplit[0];
@@ -279,7 +279,7 @@ class elareport_dashboard extends report_base {
 
     public function params(): array {
         return [
-            'course' => required_param('course', PARAM_INT)
+            'course' => 30//required_param('course', PARAM_INT)
         ];
     }
 

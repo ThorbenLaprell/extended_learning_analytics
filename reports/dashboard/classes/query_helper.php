@@ -15,16 +15,40 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version info for the Sections Report
+ * Version info for the Course Dashboard
  *
  * @package     local_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace elareport_dashboard;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'elareport_dashboard';
+class query_helper {
 
-$plugin->version = '2018052501';
-$plugin->requires = '2017111302';
+    public static function query_weekly_activity(int $courseid) : array {
+        global $DB;
+
+        $course = get_course($courseid);
+
+        $startdate = new \DateTime();
+        $startdate->setTimestamp($course->startdate);
+        $startdate->modify('Monday this week'); // Get start of week.
+
+        $mondaytimestamp = $startdate->format('U');
+
+        $query = <<<SQL
+        SELECT (FLOOR((l.timecreated - {$mondaytimestamp}) / (7 * 60 * 60 * 24)) + 1)
+        AS WEEK,
+        COUNT(*) clicks
+        FROM {logstore_lanalytics_log} l
+        GROUP BY week
+        ORDER BY week;
+SQL;
+
+        return $DB->get_records_sql($query, [$courseid]);
+    }
+
+}
