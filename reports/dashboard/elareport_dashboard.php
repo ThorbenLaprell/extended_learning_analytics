@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 use \local_learning_analytics\local\outputs\plot;
 use \local_learning_analytics\report_base;
 use elareport_dashboard\query_helper;
-use \local_learning_analytics\settings;
+use \local_extended_learning_analytics\settings;
 
 class elareport_dashboard extends report_base {
 
@@ -251,7 +251,8 @@ class elareport_dashboard extends report_base {
         $helpprefix = "<div class='headingfloater'>{$icon}</div>";
 
 
-        $previewboxes = settings::get_config('dashboard_boxes');
+        $previewboxes = settings::get_config('navigation_boxes');
+        var_dump($previewboxes);
         $splitpreviewkeys = explode(',', $previewboxes);
 
         $subpluginsboxes = [];
@@ -260,8 +261,9 @@ class elareport_dashboard extends report_base {
             $pluginsplit = explode(':', $plugininfo);
             $pluginkey = $pluginsplit[0];
             $pluginsize = intval($pluginsplit[1]);
-            $previewfile = "{$CFG->dirroot}/local/learning_analytics/reports/{$pluginkey}/classes/preview.php";
+            $previewfile = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$pluginkey}/classes/preview.php";
             if (file_exists($previewfile)) {
+                var_dump($previewfile);
                 include_once($previewfile);
                 $previewClass = "lareport_{$pluginkey}\\preview";
                 $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content($params), ["</div>"]);
