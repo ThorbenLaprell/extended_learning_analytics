@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 use \local_learning_analytics\local\outputs\plot;
 use \local_learning_analytics\report_base;
 use elareport_dashboard\query_helper;
-use \local_extended_learning_analytics\settings;
 
 class elareport_dashboard extends report_base {
 
@@ -49,7 +48,7 @@ class elareport_dashboard extends report_base {
 
         $weeks = query_helper::query_weekly_activity($courseid);
 
-        $privacythreshold = settings::get_config('dataprivacy_threshold');
+        $privacythreshold = get_config('local_extended_learning_analytics', 'dataprivacy_threshold');
 
         $plot = new plot();
         $x = [];
@@ -244,8 +243,7 @@ class elareport_dashboard extends report_base {
 
         $courseid = $params['course'];
 
-        $previewboxes = settings::get_config('dashboard_boxes');
-        var_dump($previewboxes);
+        $previewboxes = get_config('local_extended_learning_analytics', 'dashboard_boxes');
         $splitpreviewkeys = explode(',', $previewboxes);
 
         $subpluginsboxes = [];
@@ -256,15 +254,17 @@ class elareport_dashboard extends report_base {
             $pluginsize = intval($pluginsplit[1]);
             $previewfile = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$pluginkey}/classes/preview.php";
             if (file_exists($previewfile)) {
-                var_dump($previewfile);
                 include_once($previewfile);
-                $previewClass = "lareport_{$pluginkey}\\preview";
+                $previewClass = "elareport_{$pluginkey}\\preview";
                 $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content($params), ["</div>"]);
             }
         }
 
+        $helpprefix = "<div class='headingfloater'>{$icon}</div>";
+        var_dump($subpluginsboxes);
+
         return array_merge(
-            [self::heading(get_string('pluginname', 'lareport_coursedashboard'), true, $helpprefix)],
+            [self::heading(get_string('pluginname', 'elareport_dashboard'), true, $helpprefix)],
             $this->activiyoverweeks($courseid),
             ["<div class='row reportboxes'>"],
             $subpluginsboxes,

@@ -30,7 +30,6 @@ defined('MOODLE_INTERNAL') || die;
 $settings = null;
 
 $settingscategory = new admin_category('local_extended_learning_analytics', get_string('pluginname', 'local_extended_learning_analytics'));
-var_dump($settingscategory);
 $ADMIN->add('localplugins', $settingscategory);
 
 $settings = new admin_settingpage('local_extended_learning_analytics_general_settings',
@@ -42,7 +41,7 @@ if ($ADMIN->fulltree) {
         'local_extended_learning_analytics/dashboard_boxes',
         'dashboard_boxes',
         get_string('setting_dashboard_boxes', 'local_extended_learning_analytics'),
-        'learners:3', // default value
+        'trendchart:3', // default value
         PARAM_RAW,
         60
     ));
