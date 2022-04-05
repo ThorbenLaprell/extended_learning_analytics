@@ -28,12 +28,9 @@ defined('MOODLE_INTERNAL') || die;
 // Empty $settings to prevent a single settings page from being created by lib/classes/plugininfo/block.php
 // because we will create several settings pages now.
 $settings = null;
-var_dump(get_string('pluginname', 'local_extended_learning_analytics'));
-var_dump(get_string('general_settings', 'local_extended_learning_analytics'));
-var_dump(get_string('setting_dashboard_boxes', 'local_extended_learning_analytics'));
-
 
 $settingscategory = new admin_category('local_extended_learning_analytics', get_string('pluginname', 'local_extended_learning_analytics'));
+var_dump($settingscategory);
 $ADMIN->add('localplugins', $settingscategory);
 
 $settings = new admin_settingpage('local_extended_learning_analytics_general_settings',
@@ -54,7 +51,7 @@ if ($ADMIN->fulltree) {
 
 $ADMIN->add('local_extended_learning_analytics', $settings);
 
-foreach (core_plugin_manager::instance()->get_plugins_of_type('lareport') as $plugin) {
+foreach (core_plugin_manager::instance()->get_plugins_of_type('elareport') as $plugin) {
     /** @var \editor_atto\plugininfo\atto $plugin */
     $plugin->load_settings($ADMIN, 'local_extended_learning_analytics', $hassiteconfig);
 }

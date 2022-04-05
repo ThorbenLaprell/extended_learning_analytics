@@ -244,14 +244,7 @@ class elareport_dashboard extends report_base {
 
         $courseid = $params['course'];
 
-        $helpurl = new moodle_url('/local/learning_analytics/help.php', ['course' => $courseid]);
-        $icon = \html_writer::link($helpurl,
-            $OUTPUT->pix_icon('e/help', get_string('help', 'lareport_coursedashboard'), 'moodle', ['class' => 'helpicon'])
-        );
-        $helpprefix = "<div class='headingfloater'>{$icon}</div>";
-
-
-        $previewboxes = settings::get_config('navigation_boxes');
+        $previewboxes = settings::get_config('dashboard_boxes');
         var_dump($previewboxes);
         $splitpreviewkeys = explode(',', $previewboxes);
 
