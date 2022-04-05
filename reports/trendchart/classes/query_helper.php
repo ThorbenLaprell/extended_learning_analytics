@@ -28,27 +28,43 @@ defined('MOODLE_INTERNAL') || die();
 
 class query_helper {
 
-    public static function query_weekly_activity(int $courseid) : array {
+    public static function preview_hits_per_learner_in_last_seven_days(int $courseid) : array {
         global $DB;
 
         $course = get_course($courseid);
 
-        $startdate = new \DateTime();
-        $startdate->setTimestamp($course->startdate);
-        $startdate->modify('Monday this week'); // Get start of week.
+        $now = date("Y-m-d H:i:s");
 
-        $mondaytimestamp = $startdate->format('U');
+        $nowtimestamp = time();
 
         $query = <<<SQL
-        SELECT (FLOOR((l.timecreated - {$mondaytimestamp}) / (7 * 60 * 60 * 24)) + 1)
-        AS WEEK,
-        COUNT(*) clicks
+        SELECT COUNT(*) / ? As hitsPerLearner
         FROM {logstore_lanalytics_log} l
-        GROUP BY week
-        ORDER BY week;
+        WHERE l.courseid = ?
+        AND l.timecreated > ?
 SQL;
 
-        return $DB->get_records_sql($query, [$courseid]);
+        $enrols = $DB->get_records('enrol', array('courseid'=>$courseid));
+        $enrolids = [];
+        foreach($enrols as $enrol) {
+            array_push($enrolids, (int)$enrol->id);
+        }
+        $peopleincourse = [];
+        foreach($enrolids as $enrol){
+            $helper = $DB->get_records('user_enrolments', array('enrolid'=>$enrol));
+            foreach($helper as $user){
+                array_push($peopleincourse, (int)$user->userid);
+            }
+        }
+        $studentrole = (int)$DB->get_record('role', array('shortname'=>'student'))->id;
+        $students = [];
+        $helper = $DB->get_records('role_assignments', array('roleid'=>$studentrole));
+        foreach($helper as $user){
+            array_push($students, (int)$user->userid);
+        }
+        $onlystudents = array_intersect($peopleincourse, $students);
+        $studentcount = count($onlystudents);
+        return $DB->get_records_sql($query, [$studentcount, $courseid, $nowtimestamp-7*24*60*60]);
     }
 
 }

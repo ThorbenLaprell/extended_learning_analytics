@@ -36,19 +36,13 @@ class preview extends report_preview {
         $titletext = get_string('click_count', 'lareport_weekheatmap');
         $subtext = get_string('last_7_days', 'lareport_coursedashboard');
 
-        $counts = query_helper::preview_query_click_count($courseid);
-
-        $hits = $counts['hits'];
-        $hitsLast7Days = $hits[1];
-        $hitsdiff = $hits[1] - $hits[0];
-        $privacythreshold = settings::get_config('dataprivacy_threshold');
-        $strclicks = get_string('clicks', 'lareport_coursedashboard');
-        if ($hitsLast7Days < $privacythreshold) {
-            return [ report_preview::boxcomplex('click_count', $titletext, self::icon(), $subtext, '-', "< {$privacythreshold} {$strclicks}", $courseid, 'weekheatmap') ];
-        }
+        $counts = query_helper::preview_hits_per_learner_in_last_seven_days($courseid);
+        $firstProp = current( (Array)$counts );
+        $learnerparticipation = round((double)$firstProp->hitsperlearner*100, 1);
+        var_dump($learnerparticipation);
         
         return [
-            report_preview::box('click_count', $titletext, self::icon(), $subtext, $hitsLast7Days, $hitsdiff, $courseid, 'weekheatmap')
+            report_preview::box('click_count', $titletext, self::icon(), $subtext, $hitsLast7Days, $learnerparticipation, $courseid, 'weekheatmap')
         ];
     }
 
