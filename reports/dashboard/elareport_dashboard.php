@@ -260,11 +260,8 @@ class elareport_dashboard extends report_base {
             }
         }
 
-        $helpprefix = "<div class='headingfloater'>{$icon}</div>";
-        var_dump($subpluginsboxes);
-
         return array_merge(
-            [self::heading(get_string('pluginname', 'elareport_dashboard'), true, $helpprefix)],
+            [self::heading(get_string('pluginname', 'elareport_dashboard'), true)],
             $this->activiyoverweeks($courseid),
             ["<div class='row reportboxes'>"],
             $subpluginsboxes,
