@@ -51,7 +51,7 @@ SQL;
         return $DB->get_records_sql($query, [$courseid]);
     }
 
-    public static function query_activity_from_timestamp_till_now(int $timestamp) : array {
+    public static function query_activity_from_date_till_now($date) : array {
         global $DB;
 
         $query = <<<SQL
@@ -60,11 +60,12 @@ SQL;
         WHERE l.timecreated >= ?
 SQL;
 
-        return $DB->get_records_sql($query, [$timestamp]);
+        return $DB->get_records_sql($query, [$date->getTimestamp()]);
     }
 
-    public static function query_activity_at_dayX(int $timestamp) : array {
+    public static function query_activity_at_dayX(int $date) : array {
         global $DB;
+        $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + 86400;
 
         $query = <<<SQL

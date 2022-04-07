@@ -10,7 +10,7 @@
         <FIELD NAME="filter" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="hits" TYPE="int" LENGTH="12" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="date" TYPE="int" LENGTH="8" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="date" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

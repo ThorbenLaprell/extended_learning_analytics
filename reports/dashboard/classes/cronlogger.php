@@ -31,16 +31,17 @@ use stdClass;
 
 class cronlogger {
 
-    //saves the number of hits globally for the day which starts with timestamp
-    public static function query_and_save_dayX($timestamp) {
+    //saves the number of hits globally for the day which starts with date
+    public static function query_and_save_dayX($date) {
         global $DB;
-        $queryreturn = query_helper::query_activity_at_dayX($timestamp);
+        $queryreturn = query_helper::query_activity_at_dayX($date);
         $firstProp = current( (Array)$queryreturn );
         $hits = (int)$firstProp->hits;
         $record = new stdClass();
-        $record->timecreated = $timestamp+86399;
+        $record->timecreated = (new \DateTime())->getTimestamp();
         $record->hits = $hits;
-        $DB->insert_record('elanalytics_history_dashb', $record);
+        $record->date = $date->format('Y-m-d');
+        insert_or_update($record);
     }
     
     //saves the number of hits globally for each day between these timestamps
@@ -51,7 +52,7 @@ class cronlogger {
         $interval = new \DateInterval('P1D');
         $daterange = new \DatePeriod($begin, $interval ,$end);
         foreach($daterange as $date){
-            query_and_save_dayX($date->getTimestamp());
+            query_and_save_dayX($date);
         }
     }
 
@@ -60,20 +61,20 @@ class cronlogger {
         global $DB;
         $time = new \DateTime();
         $time->modify('today');
-        $timestamp = $time->getTimestamp();
-        $queryreturn = query_helper::query_activity_from_timestamp_till_now($timestamp);
+        $queryreturn = query_helper::query_activity_from_date_till_now($time);
         $firstProp = current( (Array)$queryreturn );
         $hits = (int)$firstProp->hits;
         $record = new stdClass();
-        $record->timecreated = $timestamp+86399;
+        $record->timecreated = (new \DateTime())->getTimestamp();
         $record->hits = $hits;
-        $DB->insert_record('elanalytics_history_dashb', $record);
+        $record->date = $time->format('Y-m-d');
+        insert_or_update($record);
     }
 
     public static function insert_or_update($entry) {
         global $DB;
-        if($DB->record_exists('elanalytics_history_dashb', array('timecreated'=>$entry->timecreated))) {
-            $recordwithtimecreated = $DB->get_field('elanalytics_history_dashb', 'id', array('timecreated'=>$entry->timecreated));
+        if($DB->record_exists('elanalytics_history_dashb', array('date'=>$entry->date))) {
+            $recordwithtimecreated = $DB->get_field('elanalytics_history_dashb', 'id', array('date'=>$entry->date));
             $entry->id = $recordwithtimecreated;
         }
         $DB->insert_record('elanalytics_history_dashb', $entry);
@@ -81,7 +82,7 @@ class cronlogger {
 
     public static function insert_if_not_existing($entry) {
         global $DB;
-        if($DB->record_exists('elanalytics_history_dashb', array('timecreated'=>$entry->timecreated))) {
+        if($DB->record_exists('elanalytics_history_dashb', array('date'=>$entry->date))) {
             return;
         } else {
             $DB->insert_record('elanalytics_history_dashb', $entry);
