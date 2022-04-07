@@ -51,4 +51,30 @@ SQL;
         return $DB->get_records_sql($query, [$courseid]);
     }
 
+    public static function query_activity_from_timestamp_till_now(int $timestamp) : array {
+        global $DB;
+
+        $query = <<<SQL
+        SELECT COUNT(*) AS hits
+        FROM {logstore_lanalytics_log} l
+        WHERE l.timecreated >= ?
+SQL;
+
+        return $DB->get_records_sql($query, [$timestamp]);
+    }
+
+    public static function query_activity_at_dayX(int $timestamp) : array {
+        global $DB;
+        $endtimestamp = $timestamp + 86400;
+
+        $query = <<<SQL
+        SELECT COUNT(*) AS hits
+        FROM {logstore_lanalytics_log} l
+        WHERE l.timecreated >= ?
+        AND l.timecreated < ?
+SQL;
+
+        return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);
+    }
+
 }

@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 use \local_learning_analytics\local\outputs\plot;
 use \local_learning_analytics\report_base;
 use elareport_dashboard\query_helper;
+use elareport_dashboard\cronlogger;
 
 class elareport_dashboard extends report_base {
 
