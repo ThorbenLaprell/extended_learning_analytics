@@ -1,5 +1,7 @@
-- Automatisierte Kursid fixen
-- Root in den Adminsettings verbuggt
-- Eigene Box hinzufügen
+- Eigene Preview-Box hinzufügen
 - capabilities definieren und aktivieren
-- auswertungen im direkten Hochschulvergleich
+- fehlende Reports (inklusive previews)
+- Life cycle
+- Cronjobs
+- Datenspeicherung der cronjobs in moodle db
+- Zugriff aus Kurs in Settings o.ä. moven
