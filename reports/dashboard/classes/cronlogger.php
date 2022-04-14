@@ -77,7 +77,7 @@ class cronlogger {
             $recordwithtimecreated = $DB->get_field('elanalytics_history_dashb', 'id', array('date'=>$entry->date));
             $entry->id = $recordwithtimecreated;
         }
-        $DB->insert_record('elanalytics_history_dashb', $entry);
+        $DB->update_record('elanalytics_history_dashb', $entry);
     }
 
     public static function insert_if_not_existing($entry) {
