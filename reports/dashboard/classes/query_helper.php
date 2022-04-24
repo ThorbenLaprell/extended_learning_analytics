@@ -28,13 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 
 class query_helper {
 
-    public static function query_weekly_activity(int $courseid) : array {
+    public static function query_weekly_activity() : array {
         global $DB;
 
-        $course = get_course($courseid);
-
         $startdate = new \DateTime();
-        $startdate->setTimestamp($course->startdate);
+        $startdate->modify('-29 weeks');
         $startdate->modify('Monday this week'); // Get start of week.
 
         $mondaytimestamp = $startdate->format('U');
@@ -48,7 +46,7 @@ class query_helper {
         ORDER BY week;
 SQL;
 
-        return $DB->get_records_sql($query, [$courseid]);
+        return $DB->get_records_sql($query);
     }
 
     public static function query_activity_from_date_till_now($date) : array {

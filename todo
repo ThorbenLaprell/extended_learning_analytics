@@ -5,3 +5,4 @@
 - Cronjobs
 - Datenspeicherung der cronjobs in moodle db
 - Zugriff aus Kurs in Settings o.ä. moven
+- preview.php course entfernen

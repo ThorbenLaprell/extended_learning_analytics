@@ -34,20 +34,18 @@ class elareport_dashboard extends report_base {
     const X_MIN = -1;
     const X_MAX = 30;
 
-    private function activiyoverweeks(int $courseid) : array {
-        $course = get_course($courseid);
-
+    private function activiyoverweeks() : array {
         $date = new DateTime();
         $date->modify('-1 week');
         $now = $date->getTimestamp();
+        $date->modify('-28 week');
 
-        $date->setTimestamp($course->startdate);
         $date->modify('Monday this week'); // Get start of week.
 
         $endoflastweek = new DateTime();
         $endoflastweek->modify('Sunday last week');
 
-        $weeks = query_helper::query_weekly_activity($courseid);
+        $weeks = query_helper::query_weekly_activity();
 
         $privacythreshold = get_config('local_extended_learning_analytics', 'dataprivacy_threshold');
 
@@ -242,8 +240,6 @@ class elareport_dashboard extends report_base {
         global $PAGE, $DB, $OUTPUT, $CFG;
         $PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/styles.css?3');
 
-        $courseid = $params['course'];
-
         $previewboxes = get_config('local_extended_learning_analytics', 'dashboard_boxes');
         $splitpreviewkeys = explode(',', $previewboxes);
 
@@ -263,7 +259,7 @@ class elareport_dashboard extends report_base {
 
         return array_merge(
             [self::heading(get_string('pluginname', 'elareport_dashboard'), true)],
-            $this->activiyoverweeks($courseid),
+            $this->activiyoverweeks(),
             ["<div class='row reportboxes'>"],
             $subpluginsboxes,
             ["</div>"]
