@@ -6,3 +6,14 @@
 - Datenspeicherung der cronjobs in moodle db
 - Zugriff aus Kurs in Settings o.ä. moven
 - preview.php course entfernen
+Simulation mit 200.000.000 Daten im Homeoffice
+Anbindung des Cronloggers
+Moodle Data Verzeichnis 
+Alles in eine Tabelle
+Bigstring als json
+tasks
+
+site admin -> server -> task ->scheduled
+
+export oder download csv
+grafik exportieren plotly.js
