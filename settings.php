@@ -55,6 +55,15 @@ foreach (core_plugin_manager::instance()->get_plugins_of_type('elareport') as $p
     $plugin->load_settings($ADMIN, 'local_extended_learning_analytics', $hassiteconfig);
 }
 
+$ADMIN->add('users',
+    new admin_externalpage (
+        'local_extended_learning_analytics',
+        "Extended learning Analytics",
+        new moodle_url('/local/extended_learning_analytics/index.php'),
+        'moodle/site:config'
+    )
+);
+
 // Required or the editor plugininfo will add this section twice.
 unset($settings);
 $settings = null;
