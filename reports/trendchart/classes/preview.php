@@ -24,25 +24,24 @@
 
 namespace elareport_trendchart;
 
-use \local_learning_analytics\report_preview;
+use \local_extended_learning_analytics\report_preview;
 use \local_learning_analytics\settings;
 
 defined('MOODLE_INTERNAL') || die;
 
 class preview extends report_preview {
 
-    public static function content(array $params): array {
-        $courseid = $params['course'];
+    public static function content(): array {
         $titletext = get_string('click_count', 'lareport_weekheatmap');
         $subtext = get_string('last_7_days', 'lareport_coursedashboard');
 
-        $counts = query_helper::preview_hits_per_learner_in_last_seven_days($courseid);
+        $counts = query_helper::preview_hits_per_learner_in_last_seven_days(30);
         $firstProp = current( (Array)$counts );
         $learnerparticipation = round((double)$firstProp->hitsperlearner*100, 1);
         var_dump($learnerparticipation);
         
         return [
-            report_preview::box('click_count', $titletext, self::icon(), $subtext, $hitsLast7Days, $learnerparticipation, $courseid, 'weekheatmap')
+            report_preview::box('click_count', $titletext, self::icon(), $subtext, $hitsLast7Days, $learnerparticipation, 'weekheatmap')
         ];
     }
 

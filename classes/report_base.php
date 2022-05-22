@@ -15,15 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Upgrade for logstore_lanalytics
+ * Learning Analytics Base Report
  *
- * @package     logstore_lanalytics
+ * @package     local_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_extended_learning_analytics_upgrade($oldversion) {
-    global $DB;
-    //to be changed if further developped
-    return true;
+namespace local_extended_learning_analytics;
+
+use html_writer;
+
+defined('MOODLE_INTERNAL') || die;
+
+/**
+ * Class report_base
+ *
+ * @package local_learning_analytics
+ */
+abstract class report_base {
+    public function heading(string $title, $showhr = true, string $prefix = '') {
+        $hr = $showhr ? "<div class='w-100'><hr></div>" : '<div class="mb-2"></div>'; // hr or some space
+        return "<div class='row'><div class='col'>{$prefix}"
+        . html_writer::tag('h2', $title)
+        . "</div></div>" . $hr;
+    }
+    public abstract function run(): array;
 }

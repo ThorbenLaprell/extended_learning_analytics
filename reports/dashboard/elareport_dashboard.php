@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use \local_learning_analytics\local\outputs\plot;
-use \local_learning_analytics\report_base;
+use \local_extended_learning_analytics\report_base;
 use elareport_dashboard\query_helper;
 use elareport_dashboard\cronlogger;
 
@@ -236,7 +236,7 @@ class elareport_dashboard extends report_base {
         ];
     }
 
-    public function run(array $params): array {
+    public function run(): array {
         global $PAGE, $DB, $OUTPUT, $CFG;
         $PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/styles.css?3');
 
@@ -253,7 +253,7 @@ class elareport_dashboard extends report_base {
             if (file_exists($previewfile)) {
                 include_once($previewfile);
                 $previewClass = "elareport_{$pluginkey}\\preview";
-                $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content($params), ["</div>"]);
+                $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content(), ["</div>"]);
             }
         }
 
@@ -264,12 +264,6 @@ class elareport_dashboard extends report_base {
             $subpluginsboxes,
             ["</div>"]
         );
-    }
-
-    public function params(): array {
-        return [
-            'course' => 30//required_param('course', PARAM_INT)
-        ];
     }
 
 }
