@@ -36,17 +36,16 @@ class router {
 
     public static function run_report_or_page(
         $instance,
-        $params,
         string $reportname,
         string $pagename = null
     ) : string {
         global $PAGE;
 
-        $outputs = $instance->run($params);
+        $outputs = $instance->run();
 
         $title = get_string('pluginname', "lareport_{$reportname}");
         if ($reportname !== 'dashboard') { // TODO dont hardcode this, set default for main report somewhere.
-            $PAGE->navbar->add($title, self::report($reportname, $params));
+            $PAGE->navbar->add($title, self::report($reportname));
         }
 
         $ret = "<div class='container-fluid'>";
@@ -103,8 +102,7 @@ class router {
             }
         }
         if ($instance) {
-            $params = $instance->params();
-            return self::run_report_or_page($instance, $params, $reportname, $pagename);
+            return self::run_report_or_page($instance, $reportname, $pagename);
         }
         return get_string('reports:missing', 'local_learning_analytics');
     }
