@@ -38,10 +38,9 @@ class preview extends report_preview {
         $counts = query_helper::preview_hits_per_learner_in_last_seven_days(30);
         $firstProp = current( (Array)$counts );
         $learnerparticipation = round((double)$firstProp->hitsperlearner*100, 1);
-        var_dump($learnerparticipation);
         
         return [
-            report_preview::box('click_count', $titletext, self::icon(), $subtext, $hitsLast7Days, $learnerparticipation, 'weekheatmap')
+            report_preview::box('click_count', $titletext, self::icon(), $subtext, 1, $learnerparticipation, 'weekheatmap')
         ];
     }
 

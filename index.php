@@ -32,34 +32,17 @@ require_login();
 
 global $PAGE, $USER, $DB;
 
-$courseid = 30;
-$showtour = optional_param('tour', 0, PARAM_INT) === 1;
-$context = context_course::instance($courseid, MUST_EXIST);
-
-$PAGE->set_context($context);
-
-// Set URL to main path of analytics.
-$currentparams = ['course' => $courseid];
-if ($showtour) {
-    $currentparams = ['tour' => 1, 'course' => $courseid];
-}
-$url = new moodle_url('/local/extended_learning_analytics/index.php/reports/dashboard', $currentparams);
+$url = new moodle_url('/local/extended_learning_analytics/index.php/reports/dashboard');
 $PAGE->set_url($url);
-
-// For now, all statistics are shown on course level.
-$course = get_course($courseid);
-$PAGE->set_course($course);
 
 // Header of page (we simply use the course name to be consitent with other pages)
 $PAGE->set_pagelayout('course');
-$PAGE->set_heading($course->fullname);
 
 // title of page.
-$coursename = format_string($course->fullname, true, array('context' => context_course::instance($course->id)));
-$title = $coursename . ': ' . get_string('navigation_link', 'local_extended_learning_analytics');
+$title = get_string('navigation_link', 'local_extended_learning_analytics');
 $PAGE->set_title($title);
 
-$resultinghtml = router::run($_SERVER['REQUEST_URI'] . "/reports/dashboard?course=30");
+$resultinghtml = router::run($_SERVER['REQUEST_URI'] . "/reports/dashboard");
 
 $output = $PAGE->get_renderer('local_learning_analytics');
 
