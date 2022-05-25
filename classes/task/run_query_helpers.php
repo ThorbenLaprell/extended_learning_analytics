@@ -22,6 +22,7 @@ class run_query_helpers extends \core\task\scheduled_task {
      * Execute the task.
      */
     public function execute() {
+        var_dump("cron running");
         cronlogger::query_and_save_today();
     }
 }

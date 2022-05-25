@@ -58,6 +58,7 @@ class cronlogger {
 
     //saves the number of hits globally for today
     public static function query_and_save_today() {
+        var_dump("query and save today called");
         global $DB;
         $time = new \DateTime();
         $time->modify('today');
