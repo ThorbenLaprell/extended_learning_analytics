@@ -29,3 +29,4 @@ $string['navigation_link'] = 'extended_learning_analytics';
 $string['navigationlink'] = 'extended_learning_analytics';
 $string['general_settings'] = 'General Settings';
 $string['setting_dashboard_boxes'] = 'extended_learning_analytics';
+$string['run_query_helpers'] = 'Extended Learning Analytics Tasks';

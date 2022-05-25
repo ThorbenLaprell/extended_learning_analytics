@@ -22,7 +22,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function xmldb_extended_learning_analytics_upgrade($oldversion) {
+function xmldb_local_extended_learning_analytics_upgrade($oldversion) {
     global $DB;
     //to be changed if further developped
     return true;

@@ -1,11 +1,9 @@
-- Eigene Preview-Box hinzufügen
 - capabilities definieren und aktivieren
 - fehlende Reports (inklusive previews)
 - Life cycle
 - Cronjobs
 - Datenspeicherung der cronjobs in moodle db
-- Zugriff aus Kurs in Settings o.ä. moven
-- preview.php course entfernen
+- tasks exception handeling
 Simulation mit 200.000.000 Daten im Homeoffice
 Anbindung des Cronloggers
 Moodle Data Verzeichnis 
