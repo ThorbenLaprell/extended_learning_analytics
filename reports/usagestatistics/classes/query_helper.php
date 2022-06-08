@@ -61,7 +61,7 @@ SQL;
         return $DB->get_records_sql($query, [$date->getTimestamp()]);
     }
 
-    public static function query_activity_at_dayX(int $date) : array {
+    public static function query_activity_at_dayX($date) : array {
         global $DB;
         $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + 86400;
@@ -76,7 +76,7 @@ SQL;
         return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);
     }
 
-    public static function preview_hits_per_learner_in_last_seven_days(int $courseid) : array {
+    public static function preview_hits_per_learner_in_last_seven_days($courseid) : array {
         global $DB;
 
         $course = get_course($courseid);
