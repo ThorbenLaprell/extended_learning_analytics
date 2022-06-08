@@ -22,34 +22,37 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+ namespace elareport_usagestatistics;
+
 defined('MOODLE_INTERNAL') || die();
 
 use \local_learning_analytics\local\outputs\plot;
-use \local_learning_analytics\report_base;
-use elareport_trendchart\query_helper;
-use \local_learning_analytics\settings;
+use \local_extended_learning_analytics\report_preview;
+use elareport_usagestatistics\query_helper;
 
-class elareport_trendchart extends report_base {
+class preview extends report_preview {
 
     const X_MIN = -1;
     const X_MAX = 30;
 
-    private function activiyoverweeks(int $courseid) : array {
-        $course = get_course($courseid);
+    public static function content(): array {
+        return self::activiyoverweeks();
+    }
 
-        $date = new DateTime();
+    private function activiyoverweeks() : array {
+        $date = new \DateTime();
         $date->modify('-1 week');
         $now = $date->getTimestamp();
+        $date->modify('-28 week');
 
-        $date->setTimestamp($course->startdate);
         $date->modify('Monday this week'); // Get start of week.
 
-        $endoflastweek = new DateTime();
+        $endoflastweek = new \DateTime();
         $endoflastweek->modify('Sunday last week');
 
-        $weeks = query_helper::query_weekly_activity($courseid);
+        $weeks = query_helper::query_weekly_activity();
 
-        $privacythreshold = settings::get_config('dataprivacy_threshold');
+        $privacythreshold = get_config('local_extended_learning_analytics', 'dataprivacy_threshold');
 
         $plot = new plot();
         $x = [];
@@ -90,15 +93,15 @@ class elareport_trendchart extends report_base {
         $thousandssep = get_string('thousandssep', 'langconfig');
         $decsep = get_string('decsep', 'langconfig');
 
-        $tstrweek = get_string('week', 'lareport_coursetrendchart');
-        $strclicks = get_string('clicks', 'lareport_coursetrendchart');
+        $tstrweek = get_string('week', 'lareport_coursedashboard');
+        $strclicks = get_string('clicks', 'lareport_coursedashboard');
 
         $date->modify(($xmin - 1) . ' week');
 
         $lastweekinpast = -100;
 
         for ($i = $xmin; $i <= $xmax; $i++) {
-            $week = $weeks[$i] ?? new stdClass();
+            $week = $weeks[$i] ?? new \stdClass();
 
             $weeknumber = ($i <= 0) ? ($i - 1) : $i;
 
@@ -178,7 +181,7 @@ class elareport_trendchart extends report_base {
         $plot->add_series([
             'type' => 'scatter',
             'mode' => 'lines+markers',
-            'name' => get_string('clicks', 'lareport_coursetrendchart'),
+            'name' => get_string('clicks', 'lareport_coursedashboard'),
             'x' => $x,
             'y' => $yclicks,
             'text' => $texts,
@@ -194,7 +197,7 @@ class elareport_trendchart extends report_base {
             'legendgroup' => 'a'
         ]);
 
-        $layout = new stdClass();
+        $layout = new \stdClass();
         $layout->margin = [
             't' => 10,
             'r' => 0,
@@ -237,50 +240,4 @@ class elareport_trendchart extends report_base {
             $plot
         ];
     }
-
-    public function run(array $params): array {
-        global $PAGE, $DB, $OUTPUT, $CFG;
-        $PAGE->requires->css('/local/learning_analytics/reports/coursetrendchart/static/styles.css?3');
-
-        $courseid = $params['course'];
-
-        $helpurl = new moodle_url('/local/learning_analytics/help.php', ['course' => $courseid]);
-        $icon = \html_writer::link($helpurl,
-            $OUTPUT->pix_icon('e/help', get_string('help', 'lareport_coursetrendchart'), 'moodle', ['class' => 'helpicon'])
-        );
-        $helpprefix = "<div class='headingfloater'>{$icon}</div>";
-
-
-        $previewboxes = settings::get_config('trendchart_boxes');
-        $splitpreviewkeys = explode(',', $previewboxes);
-
-        $subpluginsboxes = [];
-
-        foreach ($splitpreviewkeys as $plugininfo) {
-            $pluginsplit = explode(':', $plugininfo);
-            $pluginkey = $pluginsplit[0];
-            $pluginsize = intval($pluginsplit[1]);
-            $previewfile = "{$CFG->dirroot}/local/learning_analytics/reports/{$pluginkey}/classes/preview.php";
-            if (file_exists($previewfile)) {
-                include_once($previewfile);
-                $previewClass = "lareport_{$pluginkey}\\preview";
-                $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content($params), ["</div>"]);
-            }
-        }
-
-        return array_merge(
-            [self::heading(get_string('pluginname', 'lareport_coursetrendchart'), true, $helpprefix)],
-            $this->activiyoverweeks($courseid),
-            ["<div class='row reportboxes'>"],
-            $subpluginsboxes,
-            ["</div>"]
-        );
-    }
-
-    public function params(): array {
-        return [
-            'course' => 30//required_param('course', PARAM_INT)
-        ];
-    }
-
 }

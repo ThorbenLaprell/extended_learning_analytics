@@ -41,7 +41,7 @@ if ($ADMIN->fulltree) {
         'local_extended_learning_analytics/dashboard_boxes',
         'dashboard_boxes',
         get_string('setting_dashboard_boxes', 'local_extended_learning_analytics'),
-        'trendchart:3', // default value
+        'usagestatistics:10',
         PARAM_RAW,
         60
     ));

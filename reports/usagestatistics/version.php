@@ -15,31 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for lareport_coursedashboard
+ * Version info for the Sections Report
  *
  * @package     local_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Extended Learning Analytics Trendchart';
+defined('MOODLE_INTERNAL') || die();
 
-$string['privacy:metadata'] = 'This plugin does not store any personal data.';
+$plugin->component = 'elareport_usagestatistics';
 
-$string['clicks'] = 'hits';
-$string['sessions'] = 'Sessions';
-$string['learners'] = 'Learners';
-
-$string['clicks_compare'] = 'Sessions (compared)';
-
-$string['week'] = 'Week';
-$string['parameter:course'] = 'Course';
-
-$string['set'] = 'Set';
-$string['not_available'] = 'N/A';
-$string['last_7_days'] = 'Last 7 days';
-$string['total'] = 'Total';
-$string['no_difference'] = 'No change';
-$string['compared_to_previous_week'] = 'Compared to the previous 7 days';
-
-$string['help'] = 'Help';
+$plugin->version = '2018052501';
+$plugin->requires = '2017111302';
