@@ -22,14 +22,18 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace elareport_dashboard;
+namespace elareport_usagestatistics;
 
 defined('MOODLE_INTERNAL') || die();
 
-use elareport_dashboard\query_helper;
+use elareport_usagestatistics\query_helper;
 use stdClass;
 
-class cronlogger {
+class logger {
+
+    public static function run() {
+        
+    }
 
     //saves the number of hits globally for the day which starts with date
     public static function query_and_save_dayX($date) {

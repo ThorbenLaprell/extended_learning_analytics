@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use \local_extended_learning_analytics\report_base;
+use \local_extended_learning_analytics\logger;
 
 class elareport_dashboard extends report_base {
 
@@ -36,6 +37,8 @@ class elareport_dashboard extends report_base {
         $splitpreviewkeys = explode(',', $previewboxes);
 
         $subpluginsboxes = [];
+
+        logger::run();
 
         foreach ($splitpreviewkeys as $plugininfo) {
             $pluginsplit = explode(':', $plugininfo);

@@ -1,7 +1,7 @@
 <?php
 namespace local_extended_learning_analytics\task;
 
-use elareport_dashboard\cronlogger;
+use extended_learning_analytics\logger;
 
 /**
  * An example of a scheduled task.
@@ -23,6 +23,6 @@ class run_query_helpers extends \core\task\scheduled_task {
      */
     public function execute() {
         var_dump("cron running");
-        cronlogger::query_and_save_today();
+        logger::run();
     }
 }

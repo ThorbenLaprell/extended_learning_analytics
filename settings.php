@@ -40,8 +40,17 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext(
         'local_extended_learning_analytics/dashboard_boxes',
         'dashboard_boxes',
-        get_string('setting_dashboard_boxes', 'local_extended_learning_analytics'),
+        get_string('setting_reports_to_show', 'local_extended_learning_analytics'),
         'usagestatistics:10',
+        PARAM_RAW,
+        60
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'local_extended_learning_analytics/reports_to_log',
+        'reports_to_log',
+        get_string('setting_reports_to_log', 'local_extended_learning_analytics'),
+        'usagestatistics',
         PARAM_RAW,
         60
     ));

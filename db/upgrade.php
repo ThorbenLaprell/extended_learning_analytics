@@ -22,8 +22,17 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
+require_once(__DIR__ . '/../lib.php');
+
 function xmldb_local_extended_learning_analytics_upgrade($oldversion) {
     global $DB;
-    //to be changed if further developped
+    $records = get_report_names();
+    foreach ($records as $record) {
+        if(!$DB->record_exists('elanalytics_reports', $record)) {
+            $DB->insert_record('elanalytics_reports', $record);
+        }
+    }
     return true;
 }

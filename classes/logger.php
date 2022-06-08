@@ -15,23 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Version info for the Elanalytics Dashboard
  *
  * @package     local_extended_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+namespace local_extended_learning_analytics;
 
-$plugin->component = 'local_extended_learning_analytics';
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2022060801;
-$plugin->release = 'v0.1.0';
-$plugin->maturity = MATURITY_STABLE;
+class logger {
 
-$plugin->requires = 2017111302;
-
-$plugin->dependencies = [
-    'local_learning_analytics' => 2020101608,
-];
+    public static function run() {
+        global $PAGE, $DB, $OUTPUT, $CFG;
+        $reportsdump = get_config('local_extended_learning_analytics', 'reports_to_log');
+        $reports = explode(',', $reportsdump);
+        foreach ($reports as $report) {
+            $logger = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$report}/classes/logger.php";
+            if (file_exists($logger)) {
+                include_once($logger);
+                $loggerClass = "elareport_{$report}\\logger";
+                $loggerClass::run();
+            }
+        }
+    }
+}

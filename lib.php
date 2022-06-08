@@ -23,3 +23,10 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+function get_report_names() {
+    return array(
+        array('name' => 'usagestatistics'),
+        array('name' => 'weekheatmap'),
+    );
+}
