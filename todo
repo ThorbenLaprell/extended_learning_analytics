@@ -15,3 +15,26 @@ site admin -> server -> task ->scheduled
 
 export oder download csv
 grafik exportieren plotly.js
+
+
+1.	Hintergrundrecherche
+2.	Erstellung eines Moodle Local Plugins
+3.	Einbettung des Plugins in die Systemadministration
+4.	Erstellung einer Hauptseite des Plugins zur späteren Darstellung der Reports
+5.	Testversion
+    a.	Implementierung Testreport
+    b.	Definierung Moodle Task
+    c.	Asynchroner Testlauf
+6.	Reports
+    a.	Use Cases
+    b.	Entwurf der Reports
+    c.	Speicheranforderungen der Reports generieren
+    d.	Tabellenstruktur zur Speicherung der Auswertungen festlegen
+    e.	Tabelle implementieren
+    f.	Implementierung der Reports
+    g.	Einbettung der Reports in die Hauptseite
+7.	Skript zur asynchronen Ausführung bei Task Aufruf implementieren
+8.	Testphase
+9.	Schreiben der Arbeit
+10.	(Lifecycle)
+11.	(Ausgabe der Daten als PDF)

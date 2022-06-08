@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/extended_learning_analytics/reports/dashboard/db" VERSION="20220407" COMMENT="XMLDB file for Moodle elanalytics"
+<XMLDB PATH="local/extended_learning_analytics/db" VERSION="20220407" COMMENT="XMLDB file for Moodle elanalytics"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="elanalytics_history_dashb" COMMENT="Log table">
+    <TABLE NAME="elanalytics_history" COMMENT="Log table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="filter" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="reportid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="hits" TYPE="int" LENGTH="12" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="date" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="input" TYPE="text" NOTNULL="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
