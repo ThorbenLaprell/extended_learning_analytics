@@ -38,7 +38,8 @@ class elareport_dashboard extends report_base {
 
         $subpluginsboxes = [];
 
-        logger::run();
+        $logger = new logger();
+        $logger->run();
 
         foreach ($splitpreviewkeys as $plugininfo) {
             $pluginsplit = explode(':', $plugininfo);

@@ -33,12 +33,23 @@ class logger {
 
     public static function run() {
         global $DB;
-        $reportid = $DB->get_record('elanalytics_reports', array('name' => 'usagestatistics'))->id;
+        $query = <<<SQL
+        SELECT id
+        FROM {elanalytics_reports} r
+        WHERE r.name = 'usagestatistics'
+SQL;
+        $reportid = $DB->get_record_sql($query)->id;
+        $begindate = new \DateTime();
+        $begindate->modify('today');
+        $begindate->format('Ymd');
+        $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+        $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
         if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
-            $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid))->input;
-            $max = findMaxDate($inputs);
+            $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
+            $max = self::findMaxDate($inputs);
+            $begindate = new \DateTime($max);
         }
-        var_dump($reportid);
+        self::query_and_save_from_date_to_today($begindate, $reportid);
     }
 
     public static function makeInsertText($hits, $weekday) {
@@ -52,77 +63,51 @@ class logger {
     public static function findMaxDate($inputs) {
         $max = 0;
         foreach ($inputs as $input) {
-            $max = max($max, returnInputTextAsVars($input)[1]);
+            $max = max($max, self::returnInputTextAsVars($input->input)[1]);
         }
         return $max;
     }
 
+    //saves the number of hits globally for each day between timestamps and now
+    public static function query_and_save_from_date_to_today($startdate, $reportid) {
+        $end = new \DateTime();
+        $end->modify('today');
+        $end->modify('+1 day');
+        $interval = new \DateInterval('P1D');
+        $daterange = new \DatePeriod($startdate, $interval ,$end);
+        foreach($daterange as $date){
+            self::query_and_save_dayX($date, $reportid);
+        }
+    }
+
     //saves the number of hits globally for the day which starts with date
-    public static function query_and_save_dayX($date) {
+    public static function query_and_save_dayX($date, $reportid) {
         global $DB;
         $queryreturn = query_helper::query_activity_at_dayX($date);
         $firstProp = current( (Array)$queryreturn );
         $hits = (int)$firstProp->hits;
-        $record = new stdClass();
-        $record->timecreated = (new \DateTime())->getTimestamp();
-        $record->hits = $hits;
-        $record->date = $date->format('Ymd');
-        insert_or_update($record);
-    }
-    
-    //saves the number of hits globally for each day between these timestamps
-    public static function query_and_save_from_date_to_date($startdate, $enddate) {
-        $begin = new \DateTime($startdate);
-        $end = new \DateTime($enddate);
-        $end->modify( '+1 day' );
-        $interval = new \DateInterval('P1D');
-        $daterange = new \DatePeriod($begin, $interval ,$end);
-        foreach($daterange as $date){
-            query_and_save_dayX($date);
-        }
+        $inserttext = self::makeInsertText($hits, $date->format('Ymd'));
+        $entry = new stdClass();
+        $entry->reportid = $reportid;
+        $entry->timecreated = (new \DateTime())->getTimestamp();
+        $entry->input = $inserttext;
+        self::insert_or_update($entry, $date);
     }
 
-    //saves the number of hits globally for each day between timestamps and now
-    public static function query_and_save_from_date_to_date($startdate) {
-        $end = new \DateTime($enddate);
-        $end->modify( '+1 day' );
-        $interval = new \DateInterval('P1D');
-        $daterange = new \DatePeriod($startdate, $interval ,$end);
-        foreach($daterange as $date){
-            query_and_save_dayX($date);
-        }
-    }
-
-    //saves the number of hits globally for today
-    public static function query_and_save_today() {
+    public static function insert_or_update($entry, $date) {
         global $DB;
-        $time = new \DateTime();
-        $time->modify('today');
-        $queryreturn = query_helper::query_activity_from_date_till_now($time);
-        $firstProp = current( (Array)$queryreturn );
-        $hits = (int)$firstProp->hits;
-        $record = new stdClass();
-        $record->timecreated = (new \DateTime())->getTimestamp();
-        $record->hits = $hits;
-        $record->date = $time->format('Ymd');
-        insert_or_update($record);
-    }
-
-    public static function insert_or_update($entry) {
-        global $DB;
-        if($DB->record_exists('elanalytics_history', array('date'=>$entry->date))) {
-            $recordwithtimecreated = $DB->get_field('elanalytics_history_dashb', 'id', array('date'=>$entry->date));
-            $entry->id = $recordwithtimecreated;
-        }
-        $DB->update_record('elanalytics_history_dashb', $entry);
-    }
-
-    public static function insert_if_not_existing($entry) {
-        global $DB;
-        if($DB->record_exists('elanalytics_history_dashb', array('date'=>$entry->date))) {
-            return;
+        $query = <<<SQL
+        SELECT *
+        FROM {elanalytics_history} h
+        WHERE h.input LIKE ?
+SQL;
+        $questionmark = "%" . explode(',', $date->format('Ymd'))[0] . "";
+        $record = $DB->get_record_sql($query, [$questionmark]);
+        if($record != false) {
+            $entry->id = $record->id;
+            $DB->update_record('elanalytics_history', $entry);
         } else {
-            $DB->insert_record('elanalytics_history_dashb', $entry);
+            $DB->insert_record('elanalytics_history', $entry);
         }
     }
 }

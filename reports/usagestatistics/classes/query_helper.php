@@ -32,7 +32,8 @@ class query_helper {
         global $DB;
 
         $startdate = new \DateTime();
-        $startdate->modify('-29 weeks');
+        $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+        $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
         $startdate->modify('Monday this week'); // Get start of week.
 
         $mondaytimestamp = $startdate->format('U');
@@ -67,7 +68,7 @@ SQL;
         $endtimestamp = $timestamp + 86400;
 
         $query = <<<SQL
-        SELECT COUNT(*) AS hits
+        SELECT COUNT(*) hits
         FROM {logstore_lanalytics_log} l
         WHERE l.timecreated >= ?
         AND l.timecreated < ?

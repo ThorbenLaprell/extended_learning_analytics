@@ -30,4 +30,5 @@ $string['navigationlink'] = 'extended_learning_analytics';
 $string['general_settings'] = 'General Settings';
 $string['setting_reports_to_show'] = 'Reports to show';
 $string['setting_reports_to_log'] = 'Reports to log';
+$string['setting_lifetimeInWeeks'] = 'Report Lifetime in Weeks';
 $string['run_query_helpers'] = 'Extended Learning Analytics Tasks';

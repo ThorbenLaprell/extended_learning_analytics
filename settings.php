@@ -55,6 +55,15 @@ if ($ADMIN->fulltree) {
         60
     ));
 
+    $settings->add(new admin_setting_configtext(
+        'local_extended_learning_analytics/lifetimeInWeeks',
+        'lifetimeInWeeks',
+        get_string('setting_lifetimeInWeeks', 'local_extended_learning_analytics'),
+        'lifetimeInWeeks:156',
+        PARAM_RAW,
+        60
+    ));
+
 }
 
 $ADMIN->add('local_extended_learning_analytics', $settings);
