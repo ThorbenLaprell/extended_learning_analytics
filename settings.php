@@ -41,7 +41,7 @@ if ($ADMIN->fulltree) {
         'local_extended_learning_analytics/dashboard_boxes',
         'dashboard_boxes',
         get_string('setting_reports_to_show', 'local_extended_learning_analytics'),
-        'usagestatistics:10',
+        'usagestatistics:8',
         PARAM_RAW,
         60
     ));

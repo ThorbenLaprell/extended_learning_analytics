@@ -30,36 +30,28 @@ class query_helper {
 
     public static function query_weekly_activity() : array {
         global $DB;
+        $query = <<<SQL
+        SELECT id
+        FROM {elanalytics_reports} r
+        WHERE r.name = 'usagestatistics'
+SQL;
+        $reportid = $DB->get_record_sql($query)->id;
 
         $startdate = new \DateTime();
         $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
         $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
         $startdate->modify('Monday this week'); // Get start of week.
 
-        $mondaytimestamp = $startdate->format('U');
+        $mondaytimestamp = $startdate->format('Ymd');
 
         $query = <<<SQL
-        SELECT (FLOOR((l.timecreated - {$mondaytimestamp}) / (7 * 60 * 60 * 24)) + 1)
-        AS WEEK,
-        COUNT(*) clicks
-        FROM {logstore_lanalytics_log} l
-        GROUP BY week
-        ORDER BY week;
+        SELECT SUBSTRING(h.input, -8) AS day,
+        SUBSTRING(h.input, 1, LOCATE(',', h.input)-1) AS hits
+        FROM {elanalytics_history} h
+        WHERE h.reportid = ?
 SQL;
 
-        return $DB->get_records_sql($query);
-    }
-
-    public static function query_activity_from_date_till_now($date) : array {
-        global $DB;
-
-        $query = <<<SQL
-        SELECT COUNT(*) AS hits
-        FROM {logstore_lanalytics_log} l
-        WHERE l.timecreated >= ?
-SQL;
-
-        return $DB->get_records_sql($query, [$date->getTimestamp()]);
+        return $DB->get_records_sql($query, [$reportid]);
     }
 
     public static function query_activity_at_dayX($date) : array {
@@ -76,44 +68,4 @@ SQL;
 
         return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);
     }
-
-    public static function preview_hits_per_learner_in_last_seven_days($courseid) : array {
-        global $DB;
-
-        $course = get_course($courseid);
-
-        $now = date("Y-m-d H:i:s");
-
-        $nowtimestamp = time();
-
-        $query = <<<SQL
-        SELECT COUNT(*) / ? As hitsPerLearner
-        FROM {logstore_lanalytics_log} l
-        WHERE l.courseid = ?
-        AND l.timecreated > ?
-SQL;
-
-        $enrols = $DB->get_records('enrol', array('courseid'=>$courseid));
-        $enrolids = [];
-        foreach($enrols as $enrol) {
-            array_push($enrolids, (int)$enrol->id);
-        }
-        $peopleincourse = [];
-        foreach($enrolids as $enrol){
-            $helper = $DB->get_records('user_enrolments', array('enrolid'=>$enrol));
-            foreach($helper as $user){
-                array_push($peopleincourse, (int)$user->userid);
-            }
-        }
-        $studentrole = (int)$DB->get_record('role', array('shortname'=>'student'))->id;
-        $students = [];
-        $helper = $DB->get_records('role_assignments', array('roleid'=>$studentrole));
-        foreach($helper as $user){
-            array_push($students, (int)$user->userid);
-        }
-        $onlystudents = array_intersect($peopleincourse, $students);
-        $studentcount = count($onlystudents);
-        return $DB->get_records_sql($query, [$studentcount, $courseid, $nowtimestamp-7*24*60*60]);
-    }
-
 }
