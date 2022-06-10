@@ -89,20 +89,21 @@ SQL;
         $inserttext = self::makeInsertText($hits, $date->format('Ymd'));
         $entry = new stdClass();
         $entry->reportid = $reportid;
-        $entry->timecreated = (new \DateTime())->getTimestamp();
+        $entry->timecreated = $date->getTimestamp()+43200;
         $entry->input = $inserttext;
-        self::insert_or_update($entry, $date);
+        self::insert_or_update($entry, $date, $reportid);
     }
 
-    public static function insert_or_update($entry, $date) {
+    public static function insert_or_update($entry, $date, $reportid) {
         global $DB;
         $query = <<<SQL
         SELECT *
         FROM {elanalytics_history} h
         WHERE h.input LIKE ?
+        AND h.reportid = ?
 SQL;
         $questionmark = "%" . explode(',', $date->format('Ymd'))[0] . "";
-        $record = $DB->get_record_sql($query, [$questionmark]);
+        $record = $DB->get_record_sql($query, [$questionmark, $reportid]);
         if($record != false) {
             $entry->id = $record->id;
             $DB->update_record('elanalytics_history', $entry);

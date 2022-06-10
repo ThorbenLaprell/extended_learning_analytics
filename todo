@@ -16,7 +16,6 @@ site admin -> server -> task ->scheduled
 export oder download csv
 grafik exportieren plotly.js
 
-
 1.	Hintergrundrecherche
 2.	Erstellung eines Moodle Local Plugins
 3.	Einbettung des Plugins in die Systemadministration
@@ -38,3 +37,21 @@ grafik exportieren plotly.js
 9.	Schreiben der Arbeit
 10.	(Lifecycle)
 11.	(Ausgabe der Daten als PDF)
+
+1.	General Reports
+    a.	Usage Statistics
+        i.	Zugriffsstatistiken nach Monat Woche oder Tag anzeigen lassen als Liniendiagramm
+    b.	Weekheatmap
+        i.	Darstellung der Zugriffe nach Stunden in der Woche als Heatmap
+    c.	Course Usage
+        i.	Kurse mit den meisten Aufrufen als Balkendiagramm
+        ii.	Kurse mit wenigesten Hits/user um Kandidaten für tote Kurse zu finden
+2.	Activity Reports
+    a.	Activity Usage
+        i.	Balkendiagramm der Activities mit den meisten Zugriffen
+    b.	Dominant Activity
+        i.	Tortendiagramm über alle in Kursen meist genutzten Activities
+    c.	Forum Usage
+        i.	Anzahl an Foren, Diskussionen und Posts
+        ii.	Foren mit den meisten Posts
+        iii.	Foren mit der längsten Inaktivität um Kandidaten für tote Foren zu finden
