@@ -55,3 +55,53 @@ grafik exportieren plotly.js
         i.	Anzahl an Foren, Diskussionen und Posts
         ii.	Foren mit den meisten Posts
         iii.	Foren mit der längsten Inaktivität um Kandidaten für tote Foren zu finden
+
+        array(6) {
+  ["4-22"]=>
+  object(stdClass)#112 (2) {
+    ["heatpoint"]=>
+    string(4) "4-22"
+    ["value"]=>
+    string(1) "2"
+  }
+  ["4-23"]=>
+  object(stdClass)#113 (2) {
+    ["heatpoint"]=>
+    string(4) "4-23"
+    ["value"]=>
+    string(2) "26"
+  }
+  ["4-3"]=>
+  object(stdClass)#114 (2) {
+    ["heatpoint"]=>
+    string(3) "4-3"
+    ["value"]=>
+    string(1) "2"
+  }
+  ["5-1"]=>
+  object(stdClass)#115 (2) {
+    ["heatpoint"]=>
+    string(3) "5-1"
+    ["value"]=>
+    string(1) "2"
+  }
+  ["5-21"]=>
+  object(stdClass)#116 (2) {
+    ["heatpoint"]=>
+    string(4) "5-21"
+    ["value"]=>
+    string(2) "68"
+  }
+  ["5-22"]=>
+  object(stdClass)#117 (2) {
+    ["heatpoint"]=>
+    string(4) "5-22"
+    ["value"]=>
+    string(1) "2"
+  }
+}
+
+
+
+
+    
