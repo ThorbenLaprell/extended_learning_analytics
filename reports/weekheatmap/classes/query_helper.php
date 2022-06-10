@@ -59,7 +59,7 @@ SQL;
     public static function query_activity_at_weekX($date) : array {
         global $DB;
         $timestamp = $date->getTimestamp();
-        $endtimestamp = $timestamp + 7*86400;
+        $endtimestamp = $timestamp + (7*86400);
 
         $query = <<<SQL
         SELECT (FLOOR((l.timecreated - {$timestamp}) / (60 * 60)))

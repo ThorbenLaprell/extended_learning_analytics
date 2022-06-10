@@ -32,7 +32,6 @@ use stdClass;
 class logger {
 
     public static function run() {
-        return;
         global $DB;
         $query = <<<SQL
         SELECT id
@@ -45,6 +44,7 @@ SQL;
         $begindate->format('Ymd');
         $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
         $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
+        $begindate->modify('+26 weeks');
         if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
             $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
             $max = self::findMaxDate($inputs);
@@ -91,16 +91,14 @@ SQL;
     //saves the number of hits globally for the day which starts with date
     public static function query_and_save_weekX($date, $reportid) {
         global $DB;
-        var_dump("test");
         $queryreturn = query_helper::query_activity_at_weekX($date);
-        var_dump($queryreturn);
         $firstProp = current( (Array)$queryreturn );
-        $res = (int)$firstProp->hits;
-        $values = [][];
-        foreach($res as $re) {
+        var_dump($firstProp);
+        $values = array();
+        foreach($firstProp as $re) {
             $values[floor( $re->hour / 24 ) + 1][$re->hour % 24] = $re->hits;
         }
-        var_dump($values);
+        //var_dump($values);
         return;
         $inserttext = self::makeInsertText($date->format('Ymd'), $values);
         $entry = new stdClass();

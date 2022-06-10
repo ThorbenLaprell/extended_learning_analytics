@@ -22,7 +22,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Extended Learning Analytics Usage Statistics';
+$string['pluginname'] = 'Extended Learning Analytics Week Heatmap';
 
 $string['privacy:metadata'] = 'This plugin does not store any personal data.';
 
