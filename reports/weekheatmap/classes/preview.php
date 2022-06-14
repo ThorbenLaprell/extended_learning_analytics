@@ -36,11 +36,31 @@ class preview extends report_preview {
     const X_MAX = 30;
 
     public static function content(): array {
-        return; //REMOVE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         return self::activiyoverweeks();
     }
 
     private function activiyoverweeks() : array {
+        global $USER, $OUTPUT, $DB;
+
+        $plotdata = [];
+        $textdata = [];
+        $xstrs = [];
+        $texts = [];
+
+        $calendar = \core_calendar\type_factory::get_calendar_instance();
+        $startOfWeek = $calendar->get_starting_weekday(); // 0 -> Sunday, 1 -> Monday
+
+        $days = array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday');
+        if ($startOfWeek !== 0) {
+            $days = array_merge(array_slice($days, $startOfWeek), array_slice($days, 0, $startOfWeek));
+        }
+        $days = array_reverse($days);
+        
+        $ystrs = [];
+        foreach ($days as $day) {
+            $ystrs[] = get_string($day, 'calendar');
+        }
+
         $date = new \DateTime();
         $date->modify('-1 week');
         $now = $date->getTimestamp();
@@ -51,192 +71,70 @@ class preview extends report_preview {
         $endoflastweek = new \DateTime();
         $endoflastweek->modify('Sunday last week');
 
+        $heatpoints = array();
+        for($i=1; $i<8; $i++) {
+            for($j=0; $j<24; $j++) {
+                $heatpoints[$i . "-" . $j] = new \stdClass();
+                $heatpoints[$i . "-" . $j]->heatpoint = $i . "-" . $j;
+                $heatpoints[$i . "-" . $j]->value = 0;
+            }
+        }
         $weeks = query_helper::query_weekly_activity();
+        foreach($weeks as $week) {
+            $allinputs = explode(',', $week->inputs);
+            for($i=0; $i<count($allinputs); $i++) {
+                $input = explode(":", $allinputs[$i]);
+                $heatpoints[$input[0]]->value = $heatpoints[$input[0]]->value + $input[1];
+            }
+        }
 
-        $privacythreshold = get_config('local_extended_learning_analytics', 'dataprivacy_threshold');
-
+        for ($d = 0; $d < 7; $d += 1) {
+            // we need to start the plot at the bottom (sun -> sat -> fri -> ...)
+            $dbweekday = (6 + $startOfWeek - $d) % 7; // 0 (Sun) -> 6 (Sat) -> 5 (Fri) -> ...
+            $daydata = [];
+            $textdata = [];
+            for ($h = 0; $h < 24; $h += 1) {
+                $dbkey = $dbweekday . '-' . $h;
+                $datapoint = empty($heatpoints[$dbkey]) ? 0 : $heatpoints[$dbkey]->value;
+                $text = $datapoint;
+                $daydata[] = $datapoint;
+                $maxvalue = max($datapoint, $maxvalue);
+                $hourstr = str_pad($h, 2, '0', STR_PAD_LEFT);
+                $x = "{$hourstr}:00 - {$hourstr}:59";
+                $xstrs[] = $x;
+                $textdata[] = "<b>{$text} {$hitsstr}</b><br>{$ystrs[$d]}, {$x}";
+            }
+            $plotdata[] = $daydata;
+            $texts[] = $textdata;
+        }
         $plot = new plot();
-        $x = [];
-        $yclicks = [];
-
-        $texts = [];
-
-        $shapes = [
-            [ // Line showing the start of the lecture.
-                'type' => 'line',
-                'xref' => 'x',
-                'yref' => 'paper',
-                'x0' => 0.5,
-                'x1' => 0.5,
-                'y0' => -0.07,
-                'y1' => 1,
-                'line' => [
-                    'color' => 'rgb(0, 0, 0)',
-                    'width' => 1.5
-                ]
-            ]
-        ];
-
-        $ymax = 1;
-
-        foreach ($weeks as $week) {
-            $ymax = max($ymax, $week->clicks);
-        }
-        $ymax = $ymax * 1.1;
-
-        $xmin = self::X_MIN;
-        $xmax = self::X_MAX;
-
-        $tickvals = [];
-        $ticktext = [];
-
-        $dateformat = get_string('strftimedate', 'langconfig');
-        $thousandssep = get_string('thousandssep', 'langconfig');
-        $decsep = get_string('decsep', 'langconfig');
-
-        $tstrweek = get_string('week', 'lareport_coursedashboard');
-        $strclicks = get_string('clicks', 'lareport_coursedashboard');
-
-        $date->modify(($xmin - 1) . ' week');
-
-        $lastweekinpast = -100;
-
-        for ($i = $xmin; $i <= $xmax; $i++) {
-            $week = $weeks[$i] ?? new \stdClass();
-
-            $weeknumber = ($i <= 0) ? ($i - 1) : $i;
-
-            $x[] = $i;
-            $tickvals[] = $i;
-            $ticktext[] = $weeknumber;
-
-            $clickcount = $week->clicks ?? 0;
-            if ($clickcount < $privacythreshold) {
-                $clickcount = 0;
-            }
-
-            $startofweektimestamp = $date->getTimestamp();
-            $date->modify('+6 days');
-
-            if ($startofweektimestamp < $now) {
-                // Date is in the past.
-                $yclicks[] = $clickcount;
-
-                $weekstarttext = userdate($startofweektimestamp, $dateformat);
-                $weekendtext = userdate($date->getTimestamp(), $dateformat);
-                $textClicks = $clickcount;
-                if ($clickcount < $privacythreshold) {
-                    $textClicks = "< {$privacythreshold}";
-                }
-
-                $texts[] = "<b>{$tstrweek} {$weeknumber}</b> ({$weekstarttext} - {$weekendtext})<br><br>{$textClicks} {$strclicks}";
-                $lastweekinpast = $i;
-            }
-
-            $date->modify('+1 day');
-
-            $shapes[] = [
-                'type' => 'line',
-                'xref' => 'x',
-                'yref' => 'paper',
-                'x0' => ($i - 0.5),
-                'x1' => ($i - 0.5),
-                'y0' => -0.07,
-                'y1' => 1,
-                'line' => [ 'color' => '#aaa', 'width' => 1 ],
-                'layer' => 'below'
-            ];
-        }
-
-        $shapes[] = [
-            'type' => 'rect',
-            'xref' => 'x',
-            'yref' => 'paper',
-            'x0' => (self::X_MIN - 0.5),
-            'x1' => ($lastweekinpast + 0.5),
-            'y0' => -0.07,
-            'y1' => 1,
-            'opacity' => '0.25',
-            'fillcolor' => '#ddd',
-            'line' => [ 'width' => 0 ],
-            'layer' => 'below'
-        ];
-        if ($lastweekinpast !== self::X_MIN && $lastweekinpast !== self::X_MAX) {
-            $shapes[] = [ // Line shows in which week are currently are.
-                'type' => 'line',
-                'xref' => 'x',
-                'yref' => 'paper',
-                'x0' => ($lastweekinpast + 0.5),
-                'x1' => ($lastweekinpast + 0.5),
-                'y0' => -0.07,
-                'y1' => 1,
-                'line' => [
-                    'color' => 'rgb(0, 0, 0)',
-                    'width' => 1,
-                    'dash' => 'dot'
-                ]
-            ];
-        }
-
-        // Current course.
         $plot->add_series([
-            'type' => 'scatter',
-            'mode' => 'lines+markers',
-            'name' => get_string('clicks', 'lareport_coursedashboard'),
-            'x' => $x,
-            'y' => $yclicks,
+            'type' => 'heatmap',
+            'z' => $plotdata,
+            'x' => $xstrs,
+            'y' => $ystrs,
             'text' => $texts,
-            'marker' => [ 'color' => 'rgb(31, 119, 180)' ],
-            'line' => [ 'color' => 'rgb(31, 119, 180)' ],
             'hoverinfo' => 'text',
-            'hoverlabel' => [
-                'bgcolor' => '#eee',
-                'font' => [
-                    'size' => 15
-                ]
+            'colorscale' => [
+                [0,    "#F3F3F3"],
+                [.125, "#D4DFE8"],
+                [.25,  "#B6CBDE"],
+                [.375, "#97B7D3"],
+                [.5,   "#79A3C9"],
+                [.625, "#5B8FBE"],
+                [.75,  "#3C7BB4"],
+                [.875, "#1E67A9"],
+                [1,    "#00549F"], // RWTH-blue
             ],
-            'legendgroup' => 'a'
+            'xgap' => 3,
+            'ygap' => 3,
+            'zmin' => 0,
+            'zmax' => max(1, $maxvalue),
         ]);
-
         $layout = new \stdClass();
-        $layout->margin = [
-            't' => 10,
-            'r' => 0,
-            'l' => 40,
-            'b' => 40
-        ];
-        $layout->xaxis = [
-            'ticklen' => 0,
-            'showgrid' => false,
-            'zeroline' => false,
-            'range' => [ ($xmin - 0.5), ($xmax + 0.5) ],
-            'tickmode' => 'array',
-            'tickvals' => $tickvals,
-            'ticktext' => $ticktext,
-            'fixedrange' => true
-        ];
-        $layout->yaxis = [
-            'range' => [ (-1 * $ymax * 0.01), $ymax ],
-            'fixedrange' => true
-        ];
-        $layout->showlegend = true;
-        $layout->legend = [
-            'bgcolor' => 'rgba(255, 255, 255, 0.8)',
-            'orientation' => 'v',
-            'xanchor' => 'right',
-            'yanchor' => 'top',
-            'x' => (1 - 0.0021),
-            'y' => 1,
-            'bordercolor' => 'rgba(255, 255, 255, 0)',
-            'borderwidth' => 10,
-            'traceorder' => 'grouped'
-        ];
-
-        $layout->shapes = $shapes;
-
+        $layout->margin = [ 't' => 10, 'r' => 20, 'l' => 80, 'b' => 80 ];
         $plot->set_layout($layout);
-        $plot->set_height(300);
-
+        $plot->set_height(400);
         return [
             $plot
         ];
