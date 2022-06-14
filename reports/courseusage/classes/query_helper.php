@@ -39,18 +39,14 @@ SQL;
 
         $startdate = new \DateTime();
         $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
-        $startdate->modify('-29 weeks');
+        $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
         $startdate->modify('Monday this week'); // Get start of week.
         $mondaytimestamp = $startdate->format('U');
 
         $query = <<<SQL
-        SELECT (FLOOR((h.timecreated - {$mondaytimestamp}) / (7 * 60 * 60 * 24)) + 1)
-        AS WEEK,
-        SUM(SUBSTRING(h.input FROM (LOCATE(',', h.input)+1))) AS clicks
+        SELECT SUBSTRING(h.input FROM (LOCATE(',', h.input)+1)) AS inputs
         FROM {elanalytics_history} h
         WHERE h.reportid = ?
-        GROUP BY week
-        ORDER BY week;
 SQL;
 
         return $DB->get_records_sql($query, [$reportid]);

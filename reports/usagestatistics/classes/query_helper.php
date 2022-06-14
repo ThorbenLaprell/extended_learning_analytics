@@ -39,7 +39,7 @@ SQL;
 
         $startdate = new \DateTime();
         $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
-        $startdate->modify('-29 weeks');
+        $startdate->modify('-' . $lifetimeInWeeks . 'weeks');
         $startdate->modify('Monday this week'); // Get start of week.
         $mondaytimestamp = $startdate->format('U');
 

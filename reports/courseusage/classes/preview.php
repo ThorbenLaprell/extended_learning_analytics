@@ -27,6 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use \local_learning_analytics\local\outputs\plot;
+use \local_learning_analytics\local\outputs\table;
 use \local_extended_learning_analytics\report_preview;
 use elareport_courseusage\query_helper;
 
@@ -51,6 +52,30 @@ class preview extends report_preview {
         $endoflastweek->modify('Sunday last week');
 
         $weeks = query_helper::query_weekly_activity();
+        var_dump($weeks);
+
+        $tabletypes = new table();
+        $tabletypes->set_header_local(['activity_type', 'table_header_hits'], 'lareport_activities');
+
+        foreach ($hitsbytype as $item) {
+            $hits = 10;
+            $typestr = $modnameshumanreadable[$item['type']];
+            if ($hits >= $privacythreshold) {
+                $tabletypes->add_row([
+                    "{$icon} <a href='{$url}'>{$typestr}</a>",
+                    table::fancyNumberCell(
+                        $hits,
+                        $maxhitsbytype,
+                        self::$markercolorstext[$item['type']] ?? self::$markercolortextdefault
+                    )
+                ]);
+            }
+        }
+
+        if (!empty($params['mod'])) {
+            $linktoreset = router::report('activities', ['course' => $courseid]);
+            $tabletypes->add_show_more_row($linktoreset);
+        }
 
         $privacythreshold = get_config('local_extended_learning_analytics', 'dataprivacy_threshold');
 
