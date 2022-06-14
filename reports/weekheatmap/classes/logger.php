@@ -38,19 +38,24 @@ class logger {
         FROM {elanalytics_reports} r
         WHERE r.name = 'weekheatmap'
 SQL;
-        $reportid = $DB->get_record_sql($query)->id;
-        $begindate = new \DateTime();
-        $begindate->modify('today');
-        $begindate->format('Ymd');
-        $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
-        $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
-        $begindate->modify('+26 weeks');
-        if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
-            $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
-            $max = self::findMaxDate($inputs);
-            $begindate = new \DateTime($max);
+        try {
+            $reportid = $DB->get_record_sql($query)->id;
+            $begindate = new \DateTime();
+            $begindate->modify('today');
+            $begindate->modify('Monday this week');
+            $begindate->format('Ymd');
+            $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+            $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
+            if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
+                $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
+                $max = self::findMaxDate($inputs);
+                $begindate = new \DateTime($max);
+            }
+            self::query_and_save_from_date_to_today($begindate, $reportid);
+        } catch (Exception $e) {
+            return 'catch';
         }
-        self::query_and_save_from_date_to_today($begindate, $reportid);
+        
     }
 
     public static function makeInsertText($weekday, $values) {
@@ -58,7 +63,11 @@ SQL;
         for($i=1; $i<8; $i++) {
             for($j=0; $j<24; $j++) {
                 $returner = $returner . "," . $i . "-" . $j;
-                $returner = $returner . "," . $values[$i][$j];
+                if($values[$i][$j]==null) {
+                    $returner = $returner . ":0";    
+                } else {
+                    $returner = $returner . ":" . $values[$i][$j];
+                }
             }
         }
         return $returner;
@@ -79,8 +88,8 @@ SQL;
     //saves the number of hits globally for each day between timestamps and now
     public static function query_and_save_from_date_to_today($startdate, $reportid) {
         $end = new \DateTime();
-        $end->modify('today');
-        $end->modify('monday this week');
+        //$end->modify('today');
+        //$end->modify('Monday this week');
         $interval = new \DateInterval('P7D');
         $daterange = new \DatePeriod($startdate, $interval ,$end);
         foreach($daterange as $date){
@@ -92,18 +101,17 @@ SQL;
     public static function query_and_save_weekX($date, $reportid) {
         global $DB;
         $queryreturn = query_helper::query_activity_at_weekX($date);
-        $firstProp = current( (Array)$queryreturn );
-        var_dump($firstProp);
         $values = array();
-        foreach($firstProp as $re) {
+        foreach($queryreturn as $re) {
             $values[floor( $re->hour / 24 ) + 1][$re->hour % 24] = $re->hits;
         }
-        //var_dump($values);
-        return;
         $inserttext = self::makeInsertText($date->format('Ymd'), $values);
         $entry = new stdClass();
         $entry->reportid = $reportid;
-        $entry->timecreated = $date->getTimestamp()+43200;
+        $now = new \dateTime();
+        $now = $now->getTimestamp();
+        $endOfThatWeek = $date->getTimestamp()+604800;
+        $entry->timecreated = min($now, $endOfThatWeek);
         $entry->input = $inserttext;
         self::insert_or_update($entry, $date, $reportid);
     }
@@ -116,7 +124,7 @@ SQL;
         WHERE h.input LIKE ?
         AND h.reportid = ?
 SQL;
-        $questionmark = "%" . explode(',', $date->format('Ymd'))[0] . "";
+        $questionmark = explode(',', $date->format('Ymd'))[0] . "%";
         $record = $DB->get_record_sql($query, [$questionmark, $reportid]);
         if($record != false) {
             $entry->id = $record->id;

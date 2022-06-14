@@ -38,18 +38,22 @@ class logger {
         FROM {elanalytics_reports} r
         WHERE r.name = 'usagestatistics'
 SQL;
-        $reportid = $DB->get_record_sql($query)->id;
-        $begindate = new \DateTime();
-        $begindate->modify('today');
-        $begindate->format('Ymd');
-        $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
-        $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
-        if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
-            $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
-            $max = self::findMaxDate($inputs);
-            $begindate = new \DateTime($max);
+        try {
+            $reportid = $DB->get_record_sql($query)->id;
+            $begindate = new \DateTime();
+            $begindate->modify('today');
+            $begindate->format('Ymd');
+            $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+            $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
+            if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
+                $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
+                $max = self::findMaxDate($inputs);
+                $begindate = new \DateTime($max);
+            }
+            self::query_and_save_from_date_to_today($begindate, $reportid);
+        } catch (Exception $e) {
+            return 'catch';
         }
-        self::query_and_save_from_date_to_today($begindate, $reportid);
     }
 
     public static function makeInsertText($hits, $weekday) {
