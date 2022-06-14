@@ -28,5 +28,6 @@ function get_report_names() {
     return array(
         array('name' => 'usagestatistics'),
         array('name' => 'weekheatmap'),
+        array('name' => 'courseusage'),
     );
 }

@@ -56,7 +56,7 @@ SQL;
         return $DB->get_records_sql($query, [$reportid]);
     }
 
-    public static function query_activity_at_dayX($date) : array {
+    public static function query_activity_at_dayXInCourse($date, $id) : array {
         global $DB;
         $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + 86400;
@@ -66,8 +66,9 @@ SQL;
         FROM {logstore_lanalytics_log} l
         WHERE l.timecreated >= ?
         AND l.timecreated < ?
+        AND l.courseid = ?
 SQL;
 
-        return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);
+        return $DB->get_records_sql($query, [$timestamp, $endtimestamp, $id]);
     }
 }

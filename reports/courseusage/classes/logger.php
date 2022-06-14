@@ -56,10 +56,6 @@ SQL;
         }
     }
 
-    public static function makeInsertText($hits, $weekday) {
-        return $weekday . "," . $hits;
-    }
-
     public static function returnInputTextAsVars($inputtext) {
         return explode(',', $inputtext);
     }
@@ -87,10 +83,17 @@ SQL;
     //saves the number of hits globally for the day which starts with date
     public static function query_and_save_dayX($date, $reportid) {
         global $DB;
-        $queryreturn = query_helper::query_activity_at_dayX($date);
-        $firstProp = current( (Array)$queryreturn );
-        $hits = (int)$firstProp->hits;
-        $inserttext = self::makeInsertText($hits, $date->format('Ymd'));
+        $query = <<<SQL
+        SELECT id
+        FROM {course}
+SQL;
+        $courseids = $DB->get_records_sql($query);
+        $inserttext = $date->format('Ymd');
+        foreach($courseids as $courseid) {
+            $id = $courseid->id;
+            $hits = current(query_helper::query_activity_at_dayXInCourse($date, $id))->hits;
+            $inserttext = $inserttext . "," . $id . ":" . $hits;
+        }
         $entry = new stdClass();
         $entry->reportid = $reportid;
         $entry->timecreated = $date->getTimestamp()+43200;

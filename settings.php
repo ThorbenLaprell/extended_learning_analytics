@@ -41,7 +41,7 @@ if ($ADMIN->fulltree) {
         'local_extended_learning_analytics/dashboard_boxes',
         'dashboard_boxes',
         get_string('setting_reports_to_show', 'local_extended_learning_analytics'),
-        'usagestatistics:8,weekheatmap:8',
+        'usagestatistics:8,weekheatmap:8,courseusage:8',
         PARAM_RAW,
         60
     ));
@@ -50,7 +50,7 @@ if ($ADMIN->fulltree) {
         'local_extended_learning_analytics/reports_to_log',
         'reports_to_log',
         get_string('setting_reports_to_log', 'local_extended_learning_analytics'),
-        'usagestatistics,weekheatmap',
+        'usagestatistics,weekheatmap,courseusage',
         PARAM_RAW,
         60
     ));
