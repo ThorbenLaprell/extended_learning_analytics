@@ -57,7 +57,7 @@ SQL;
     }
 
     public static function makeInsertText($hits, $weekday) {
-        return $hits . "," . $weekday;
+        return $weekday . "," . $hits;
     }
 
     public static function returnInputTextAsVars($inputtext) {
@@ -67,7 +67,7 @@ SQL;
     public static function findMaxDate($inputs) {
         $max = 0;
         foreach ($inputs as $input) {
-            $max = max($max, self::returnInputTextAsVars($input->input)[1]);
+            $max = max($max, self::returnInputTextAsVars($input->input)[0]);
         }
         return $max;
     }
@@ -106,7 +106,7 @@ SQL;
         WHERE h.input LIKE ?
         AND h.reportid = ?
 SQL;
-        $questionmark = "%" . explode(',', $date->format('Ymd'))[0] . "";
+        $questionmark = explode(',', $date->format('Ymd'))[0] . "%";
         $record = $DB->get_record_sql($query, [$questionmark, $reportid]);
         if($record != false) {
             $entry->id = $record->id;
