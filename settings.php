@@ -59,7 +59,7 @@ if ($ADMIN->fulltree) {
         'local_extended_learning_analytics/lifetimeInWeeks',
         'lifetimeInWeeks',
         get_string('setting_lifetimeInWeeks', 'local_extended_learning_analytics'),
-        'lifetimeInWeeks:156',
+        '156',
         PARAM_RAW,
         60
     ));
