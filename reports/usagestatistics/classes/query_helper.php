@@ -28,14 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 class query_helper {
 
-    public static function query_weekly_activity() : array {
+    public static function query_weekly_activity() : array { //TODO LATER!!!!!!!!!!!!!!!!!!!!!!!
         global $DB;
-        $query = <<<SQL
-        SELECT id
-        FROM {elanalytics_reports} r
-        WHERE r.name = 'usagestatistics'
-SQL;
-        $reportid = $DB->get_record_sql($query)->id;
 
         $startdate = new \DateTime();
         $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];

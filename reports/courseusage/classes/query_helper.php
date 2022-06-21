@@ -28,14 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 class query_helper {
 
-    public static function query_weekly_activity() : array {
+    public static function query_weekly_activity() : array { //TODO LATER!!!!!!!!!!!!!!!!!!!!!!!
         global $DB;
-        $query = <<<SQL
-        SELECT id
-        FROM {elanalytics_reports} r
-        WHERE r.name = 'courseusage'
-SQL;
-        $reportid = $DB->get_record_sql($query)->id;
 
         $startdate = new \DateTime();
         $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
@@ -52,7 +46,7 @@ SQL;
         return $DB->get_records_sql($query, [$reportid]);
     }
 
-    public static function query_activity_at_dayXInCourse($date, $id) : array {
+    public static function query_activity_at_dayXInCourse($date, $courseid) : array {
         global $DB;
         $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + 86400;
@@ -65,6 +59,6 @@ SQL;
         AND l.courseid = ?
 SQL;
 
-        return $DB->get_records_sql($query, [$timestamp, $endtimestamp, $id]);
+        return $DB->get_records_sql($query, [$timestamp, $endtimestamp, $courseid]);
     }
 }

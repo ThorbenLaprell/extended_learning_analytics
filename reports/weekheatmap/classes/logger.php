@@ -33,104 +33,73 @@ class logger {
 
     public static function run() {
         global $DB;
-        $query = <<<SQL
-        SELECT id
-        FROM {elanalytics_reports} r
-        WHERE r.name = 'weekheatmap'
-SQL;
         try {
-            $reportid = $DB->get_record_sql($query)->id;
             $begindate = new \DateTime();
             $begindate->modify('today');
             $begindate->modify('Monday this week');
             $begindate->format('Ymd');
-            $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+            $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
             $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
-            if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
-                $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
+            if($DB->record_exists('elanalytics_weekheatmap', array())) {
+                $inputs = $DB->get_records('elanalytics_weekheatmap');
                 $max = self::findMaxDate($inputs);
                 $begindate = new \DateTime($max);
             }
-            self::query_and_save_from_date_to_today($begindate, $reportid);
+            self::query_and_save_from_date_to_today($begindate);
         } catch (Exception $e) {
             return 'catch';
         }
         
     }
 
-    public static function makeInsertText($weekday, $values) {
-        $returner = $weekday;
-        for($i=1; $i<8; $i++) {
-            for($j=0; $j<24; $j++) {
-                $returner = $returner . "," . $i . "-" . $j;
-                if($values[$i][$j]==null) {
-                    $returner = $returner . ":0";    
-                } else {
-                    $returner = $returner . ":" . $values[$i][$j];
-                }
-            }
-        }
-        return $returner;
-    }
-
-    public static function returnInputTextAsVars($inputtext) {
-        return explode(',', $inputtext);
-    }
-
-    public static function findMaxDate($inputs) {
+    public static function findMaxDate($dates) {
         $max = 0;
-        foreach ($inputs as $input) {
-            $max = max($max, self::returnInputTextAsVars($input->input)[0]);
+        foreach ($dates as $date) {
+            $max = max($max, $date->weekmondaydate);
         }
         return $max;
     }
 
     //saves the number of hits globally for each day between timestamps and now
-    public static function query_and_save_from_date_to_today($startdate, $reportid) {
+    public static function query_and_save_from_date_to_today($startdate) {
         $end = new \DateTime();
-        //$end->modify('today');
-        //$end->modify('Monday this week');
+        $end->modify('today');
+        $end->modify('Monday this week');
         $interval = new \DateInterval('P7D');
         $daterange = new \DatePeriod($startdate, $interval ,$end);
         foreach($daterange as $date){
-            self::query_and_save_weekX($date, $reportid);
+            self::query_and_save_weekX($date);
         }
     }
 
     //saves the number of hits globally for the day which starts with date
-    public static function query_and_save_weekX($date, $reportid) {
+    public static function query_and_save_weekX($date) {
         global $DB;
         $queryreturn = query_helper::query_activity_at_weekX($date);
-        $values = array();
-        foreach($queryreturn as $re) {
-            $values[floor( $re->hour / 24 ) + 1][$re->hour % 24] = $re->hits;
-        }
-        $inserttext = self::makeInsertText($date->format('Ymd'), $values);
         $entry = new stdClass();
-        $entry->reportid = $reportid;
-        $now = new \dateTime();
-        $now = $now->getTimestamp();
-        $endOfThatWeek = $date->getTimestamp()+604800;
-        $entry->timecreated = min($now, $endOfThatWeek);
-        $entry->input = $inserttext;
-        self::insert_or_update($entry, $date, $reportid);
+        $entry->timecreated = $date->getTimestamp()+43200;
+        $entry->weekmondaydate = $date->format('Ymd');
+        foreach($queryreturn as $hour) {
+            $entry->hour = $hour->heatpoint;
+            $entry->hits = $hour->value;
+            self::insert_or_update($entry);
+        }
     }
 
-    public static function insert_or_update($entry, $date, $reportid) {
+    public static function insert_or_update($entry) {
         global $DB;
         $query = <<<SQL
         SELECT *
-        FROM {elanalytics_history} h
-        WHERE h.input LIKE ?
-        AND h.reportid = ?
+        FROM {elanalytics_weekheatmap} h
+        WHERE h.weekmondaydate LIKE ?
+        AND h.hour = ?
 SQL;
-        $questionmark = explode(',', $date->format('Ymd'))[0] . "%";
-        $record = $DB->get_record_sql($query, [$questionmark, $reportid]);
+        $record = $DB->get_record_sql($query, [0, 0]);
         if($record != false) {
             $entry->id = $record->id;
-            $DB->update_record('elanalytics_history', $entry);
+            $DB->update_record('elanalytics_weekheatmap', $entry);
         } else {
-            $DB->insert_record('elanalytics_history', $entry);
+            $DB->insert_record('elanalytics_weekheatmap', $entry);
         }
     }
 }

@@ -57,15 +57,23 @@ SQL;
         $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + (7*86400);
 
+        $weekstatement = "FROM_UNIXTIME(l.timecreated, '%w-%k')";
+
+        if ($CFG->dbtype === 'pgsql') {
+            $date = new DateTime();        
+            $timezone = $date->getTimezone()->getName();
+            $weekstatement = "TO_CHAR(TO_TIMESTAMP(l.timecreated) at time zone '".$timezone."', 'D-HH24')";
+        }
+
         $query = <<<SQL
-        SELECT (FLOOR((l.timecreated - {$timestamp}) / (60 * 60)))
-        AS HOUR,
-        COUNT(*) AS hits
-        FROM {logstore_lanalytics_log} l
+        SELECT
+            {$weekstatement} AS heatpoint,
+            COUNT(1) AS value
+        FROM {logstore_lanalytics_log} AS l
         WHERE l.timecreated >= ?
         AND l.timecreated < ?
-        GROUP BY hour
-        ORDER BY hour;
+        GROUP BY heatpoint
+        ORDER BY heatpoint
 SQL;
 
         return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);

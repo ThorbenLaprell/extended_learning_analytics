@@ -33,89 +33,78 @@ class logger {
 
     public static function run() {
         global $DB;
-        $query = <<<SQL
-        SELECT id
-        FROM {elanalytics_reports} r
-        WHERE r.name = 'courseusage'
-SQL;
         try {
-            $reportid = $DB->get_record_sql($query)->id;
             $begindate = new \DateTime();
             $begindate->modify('today');
             $begindate->format('Ymd');
-            $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+            $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
             $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
-            if($DB->record_exists('elanalytics_history', array('reportid' => $reportid))) {
-                $inputs = $DB->get_records('elanalytics_history', array('reportid' => $reportid));
+            if($DB->record_exists('elanalytics_courseusage', array())) {
+                $inputs = $DB->get_records('elanalytics_courseusage');
                 $max = self::findMaxDate($inputs);
                 $begindate = new \DateTime($max);
             }
-            self::query_and_save_from_date_to_today($begindate, $reportid);
+            self::query_and_save_from_date_to_today($begindate);
         } catch (Exception $e) {
             return 'catch';
         }
     }
 
-    public static function returnInputTextAsVars($inputtext) {
-        return explode(',', $inputtext);
-    }
-
-    public static function findMaxDate($inputs) {
+    public static function findMaxDate($dates) {
         $max = 0;
-        foreach ($inputs as $input) {
-            $max = max($max, self::returnInputTextAsVars($input->input)[0]);
+        foreach ($dates as $date) {
+            $max = max($max, $date->date);
         }
         return $max;
     }
 
     //saves the number of hits globally for each day between timestamps and now
-    public static function query_and_save_from_date_to_today($startdate, $reportid) {
+    public static function query_and_save_from_date_to_today($startdate) {
         $end = new \DateTime();
         $end->modify('today');
         $end->modify('+1 day');
         $interval = new \DateInterval('P1D');
         $daterange = new \DatePeriod($startdate, $interval ,$end);
         foreach($daterange as $date){
-            self::query_and_save_dayX($date, $reportid);
+            self::query_and_save_dayX($date);
         }
     }
 
     //saves the number of hits globally for the day which starts with date
-    public static function query_and_save_dayX($date, $reportid) {
+    public static function query_and_save_dayX($date) {
         global $DB;
         $query = <<<SQL
         SELECT id
         FROM {course}
 SQL;
         $courseids = $DB->get_records_sql($query);
-        $inserttext = $date->format('Ymd');
+        $formatedDate = $date->format('Ymd');
         foreach($courseids as $courseid) {
-            $id = $courseid->id;
-            $hits = current(query_helper::query_activity_at_dayXInCourse($date, $id))->hits;
-            $inserttext = $inserttext . "," . $id . ":" . $hits;
+            $entry = new stdClass();
+            $entry->timecreated = $date->getTimestamp()+43200;
+            $entry->date = $formatedDate;
+            $entry->courseid = $courseid->id;
+            $entry->hits = current(query_helper::query_activity_at_dayXInCourse($date, $courseid->id))->hits;
+            if($entry->hits>0) {
+                self::insert_or_update($entry);
+            }
         }
-        $entry = new stdClass();
-        $entry->reportid = $reportid;
-        $entry->timecreated = $date->getTimestamp()+43200;
-        $entry->input = $inserttext;
-        self::insert_or_update($entry, $date, $reportid);
     }
 
-    public static function insert_or_update($entry, $date, $reportid) {
+    public static function insert_or_update($entry) {
         global $DB;
         $query = <<<SQL
         SELECT *
-        FROM {elanalytics_history} h
-        WHERE h.input LIKE ?
-        AND h.reportid = ?
+        FROM {elanalytics_courseusage} h
+        WHERE h.date = ?
+        AND h.courseid = ?
 SQL;
-        $questionmark = explode(',', $date->format('Ymd'))[0] . "%";
-        $record = $DB->get_record_sql($query, [$questionmark, $reportid]);
+        $record = $DB->get_record_sql($query, [$entry->date, $entry->courseid]);
         if($record != false) {
             $entry->id = $record->id;
-            $DB->update_record('elanalytics_history', $entry);
+            $DB->update_record('elanalytics_courseusage', $entry);
         } else {
-            $DB->insert_record('elanalytics_history', $entry);
+            $DB->insert_record('elanalytics_courseusage', $entry);
         }
     }
 }
