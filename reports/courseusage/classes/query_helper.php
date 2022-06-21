@@ -32,7 +32,7 @@ class query_helper {
         global $DB;
 
         $startdate = new \DateTime();
-        $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
         $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
         $startdate->modify('Monday this week'); // Get start of week.
         $mondaytimestamp = $startdate->format('U');

@@ -28,11 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 
 class query_helper {
 
-    public static function query_weekly_activity() : array { //TODO LATER!!!!!!!!!!!!!!!!!!!!!!!
+    public static function query_weekly_activity() : array {
         global $DB;
 
         $startdate = new \DateTime();
-        $lifetimeInWeeks = explode(':', get_config('local_extended_learning_analytics', 'lifetimeInWeeks'))[1];
+        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
         $startdate->modify('-' . $lifetimeInWeeks . 'weeks');
         $startdate->modify('Monday this week'); // Get start of week.
         $mondaytimestamp = $startdate->format('U');
@@ -40,14 +40,13 @@ class query_helper {
         $query = <<<SQL
         SELECT (FLOOR((h.timecreated - {$mondaytimestamp}) / (7 * 60 * 60 * 24)) + 1)
         AS WEEK,
-        SUM(SUBSTRING(h.input FROM (LOCATE(',', h.input)+1))) AS clicks
-        FROM {elanalytics_history} h
-        WHERE h.reportid = ?
+        SUM(h.hits) AS clicks
+        FROM {elanalytics_usagestatistics} h
         GROUP BY week
         ORDER BY week;
 SQL;
 
-        return $DB->get_records_sql($query, [$reportid]);
+        return $DB->get_records_sql($query, []);
     }
 
     public static function query_activity_at_dayX($date) : array {
