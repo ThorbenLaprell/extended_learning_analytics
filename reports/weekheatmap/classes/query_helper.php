@@ -30,12 +30,6 @@ class query_helper {
 
     public static function query_weekly_activity() : array {
         global $DB;
-        $query = <<<SQL
-        SELECT id
-        FROM {elanalytics_reports} r
-        WHERE r.name = 'weekheatmap'
-SQL;
-        $reportid = $DB->get_record_sql($query)->id;
 
         $startdate = new \DateTime();
         $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
@@ -44,9 +38,10 @@ SQL;
         $mondaytimestamp = $startdate->format('U');
 
         $query = <<<SQL
-        SELECT SUBSTRING(h.input FROM LOCATE(',', h.input)+1) AS inputs
-        FROM {elanalytics_history} h
-        WHERE h.reportid = ?
+        SELECT DISTINCT(h.hour) AS heatpoint,
+            SUM(h.hits) AS value
+        FROM {elanalytics_weekheatmap} h
+        GROUP BY heatpoint
 SQL;
 
         return $DB->get_records_sql($query, [$reportid]);

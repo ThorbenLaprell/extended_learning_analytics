@@ -71,31 +71,16 @@ class preview extends report_preview {
         $endoflastweek = new \DateTime();
         $endoflastweek->modify('Sunday last week');
 
-        $heatpoints = array();
-        for($i=1; $i<8; $i++) {
-            for($j=0; $j<24; $j++) {
-                $heatpoints[$i . "-" . $j] = new \stdClass();
-                $heatpoints[$i . "-" . $j]->heatpoint = $i . "-" . $j;
-                $heatpoints[$i . "-" . $j]->value = 0;
-            }
-        }
         $weeks = query_helper::query_weekly_activity();
-        foreach($weeks as $week) {
-            $allinputs = explode(',', $week->inputs);
-            for($i=0; $i<count($allinputs); $i++) {
-                $input = explode(":", $allinputs[$i]);
-                $heatpoints[$input[0]]->value = $heatpoints[$input[0]]->value + $input[1];
-            }
-        }
 
         for ($d = 0; $d < 7; $d += 1) {
             // we need to start the plot at the bottom (sun -> sat -> fri -> ...)
-            $dbweekday = (6 + $startOfWeek - $d) % 7 + 1; // 0 (Sun) -> 6 (Sat) -> 5 (Fri) -> ...
+            $dbweekday = (6 + $startOfWeek - $d) % 7; // 0 (Sun) -> 6 (Sat) -> 5 (Fri) -> ...
             $daydata = [];
             $textdata = [];
             for ($h = 0; $h < 24; $h += 1) {
                 $dbkey = $dbweekday . '-' . $h;
-                $datapoint = empty($heatpoints[$dbkey]) ? 0 : $heatpoints[$dbkey]->value;
+                $datapoint = empty($weeks[$dbkey]) ? 0 : $weeks[$dbkey]->value;
                 $text = $datapoint;
                 $daydata[] = $datapoint;
                 $maxvalue = max($datapoint, $maxvalue);
