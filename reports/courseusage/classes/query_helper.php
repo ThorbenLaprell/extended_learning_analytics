@@ -42,7 +42,7 @@ class query_helper {
         FROM {elanalytics_courseusage}
         WHERE timecreated >= ?
         GROUP BY courseid
-        ORDER BY hits
+        ORDER BY hits DESC
 SQL;
 
         return $DB->get_records_sql($query, [$startdate->getTimestamp()]);

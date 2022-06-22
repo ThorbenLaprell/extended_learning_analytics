@@ -51,6 +51,7 @@ class preview extends report_preview {
         $endoflastweek->modify('Sunday last week');
 
         $weeks = query_helper::query_weekly_activity();
+        $weeks = array_slice($weeks, count($weeks) - 31);
 
         $privacythreshold = get_config('local_extended_learning_analytics', 'dataprivacy_threshold');
 

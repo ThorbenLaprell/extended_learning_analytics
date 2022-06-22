@@ -44,7 +44,7 @@ class elareport_dashboard extends report_base {
         foreach ($splitpreviewkeys as $plugininfo) {
             $pluginsplit = explode(':', $plugininfo);
             $pluginkey = $pluginsplit[0];
-            $pluginsize = intval($pluginsplit[1]);
+            $pluginsize = 12;
             $previewfile = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$pluginkey}/classes/preview.php";
             if (file_exists($previewfile)) {
                 include_once($previewfile);
