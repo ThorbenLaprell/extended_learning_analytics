@@ -48,7 +48,7 @@ SQL;
     }
 
     public static function query_activity_at_weekX($date) : array {
-        global $DB;
+        global $DB, $CFG;
         $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + (7*86400);
 
