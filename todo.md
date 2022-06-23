@@ -11,6 +11,9 @@ Alles in eine Tabelle
 Bigstring als json
 tasks
 
+Lang dateien anpassen
+fix usage and courseusage dates etc.
+
 moodle 3.11.6
 xampp v3.3.0 7.4.28
 

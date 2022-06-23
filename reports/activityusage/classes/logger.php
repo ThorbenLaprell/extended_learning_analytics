@@ -22,11 +22,11 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace elareport_weekheatmap;
+namespace elareport_activityusage;
 
 defined('MOODLE_INTERNAL') || die();
 
-use elareport_weekheatmap\query_helper;
+use elareport_activityusage\query_helper;
 use stdClass;
 
 class logger {
@@ -36,12 +36,11 @@ class logger {
         try {
             $begindate = new \DateTime();
             $begindate->modify('today');
-            $begindate->modify('Monday this week');
             $begindate->format('Ymd');
             $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
             $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
-            if($DB->record_exists('elanalytics_weekheatmap', array())) {
-                $inputs = $DB->get_records('elanalytics_weekheatmap');
+            if($DB->record_exists('elanalytics_activityusage', array())) {
+                $inputs = $DB->get_records('elanalytics_activityusage');
                 $max = self::findMaxDate($inputs);
                 $begindate = new \DateTime($max);
             }
@@ -49,13 +48,12 @@ class logger {
         } catch (Exception $e) {
             return 'catch';
         }
-        
     }
 
     public static function findMaxDate($dates) {
         $max = 0;
         foreach ($dates as $date) {
-            $max = max($max, $date->weekmondaydate);
+            $max = max($max, $date->date);
         }
         return $max;
     }
@@ -64,27 +62,32 @@ class logger {
     public static function query_and_save_from_date_to_today($startdate) {
         $end = new \DateTime();
         $end->modify('today');
-        $end->modify('Monday this week');
-        $interval = new \DateInterval('P7D');
+        $end->modify('+1 day');
+        $interval = new \DateInterval('P1D');
         $daterange = new \DatePeriod($startdate, $interval ,$end);
         foreach($daterange as $date){
-            self::query_and_save_weekX($date);
+            self::query_and_save_dayX($date);
         }
     }
 
     //saves the number of hits globally for the day which starts with date
-    public static function query_and_save_weekX($date) {
+    public static function query_and_save_dayX($date) {
         global $DB;
-        $queryreturn = query_helper::query_activity_at_weekX($date);
-        $entry = new stdClass();
-        $entry->timecreated = $date->getTimestamp()+43200;
-        $entry->weekmondaydate = $date->format('Ymd');
-        foreach($queryreturn as $hour) {
-            $split = explode('-', $hour->heatpoint);
-            $entry->date = $split[0];
-            $entry->hour = $split[1];
-            $entry->hits = $hour->value;
-            self::insert_or_update($entry);
+        $query = <<<SQL
+        SELECT id
+        FROM {course}
+SQL;
+        $courseids = $DB->get_records_sql($query);
+        $formatedDate = $date->format('Ymd');
+        foreach($courseids as $courseid) {
+            $entry = new stdClass();
+            $entry->timecreated = $date->getTimestamp()+43200;
+            $entry->date = $formatedDate;
+            $entry->courseid = $courseid->id;
+            $entry->hits = current(query_helper::query_activity_at_dayXInCourse($date, $courseid->id))->hits;
+            if($entry->hits>0) {
+                self::insert_or_update($entry);
+            }
         }
     }
 
@@ -92,17 +95,16 @@ class logger {
         global $DB;
         $query = <<<SQL
         SELECT *
-        FROM {elanalytics_weekheatmap} h
-        WHERE h.weekmondaydate = ?
-        AND h.date = ?
-        AND h.hour = ?
+        FROM {elanalytics_activityusage} h
+        WHERE h.date = ?
+        AND h.courseid = ?
 SQL;
-        $record = $DB->get_record_sql($query, [$entry->weekmodaydate, $entry->date, $entry->hour]);
+        $record = $DB->get_record_sql($query, [$entry->date, $entry->courseid]);
         if($record != false) {
             $entry->id = $record->id;
-            $DB->update_record('elanalytics_weekheatmap', $entry);
+            $DB->update_record('elanalytics_activityusage', $entry);
         } else {
-            $DB->insert_record('elanalytics_weekheatmap', $entry);
+            $DB->insert_record('elanalytics_activityusage', $entry);
         }
     }
 }

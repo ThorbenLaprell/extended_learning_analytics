@@ -22,7 +22,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace elareport_weekheatmap;
+namespace elareport_activityusage;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -35,43 +35,32 @@ class query_helper {
         $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
         $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
         $startdate->modify('Monday this week'); // Get start of week.
-        $mondaytimestamp = $startdate->format('U');
 
         $query = <<<SQL
-        SELECT CONCAT(date, "-", hour) AS heatpoint,
-            SUM(hits) AS value
-        FROM {elanalytics_weekheatmap}
-        GROUP BY heatpoint
-        ORDER BY heatpoint
+        SELECT courseid AS courseid,
+            SUM(hits) AS hits
+        FROM {elanalytics_activityusage}
+        WHERE timecreated >= ?
+        GROUP BY courseid
+        ORDER BY hits DESC
 SQL;
 
-        return $DB->get_records_sql($query, [$reportid]);
+        return $DB->get_records_sql($query, [$startdate->getTimestamp()]);
     }
 
-    public static function query_activity_at_weekX($date) : array {
-        global $DB, $CFG;
+    public static function query_activity_at_dayXInCourse($date, $courseid) : array {
+        global $DB;
         $timestamp = $date->getTimestamp();
-        $endtimestamp = $timestamp + (7*86400);
-
-        $weekstatement = "FROM_UNIXTIME(l.timecreated, '%w-%k')";
-
-        if ($CFG->dbtype === 'pgsql') {
-            $date = new DateTime();        
-            $timezone = $date->getTimezone()->getName();
-            $weekstatement = "TO_CHAR(TO_TIMESTAMP(l.timecreated) at time zone '".$timezone."', 'D-HH24')";
-        }
+        $endtimestamp = $timestamp + 86400;
 
         $query = <<<SQL
-        SELECT
-            {$weekstatement} AS heatpoint,
-            COUNT(1) AS value
-        FROM {logstore_lanalytics_log} AS l
+        SELECT COUNT(*) hits
+        FROM {logstore_lanalytics_log} l
         WHERE l.timecreated >= ?
         AND l.timecreated < ?
-        GROUP BY heatpoint
-        ORDER BY heatpoint
+        AND l.courseid = ?
 SQL;
 
-        return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);
+        return $DB->get_records_sql($query, [$timestamp, $endtimestamp, $courseid]);
     }
 }
