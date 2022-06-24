@@ -32,8 +32,8 @@ use elareport_usagestatistics\query_helper;
 
 class preview extends report_preview {
 
-    const X_MIN = -1;
-    const X_MAX = 30;
+    const X_MIN = 0;
+    const X_MAX = 29;
 
     public static function content(): array {
         return self::activiyoverweeks();
@@ -42,7 +42,7 @@ class preview extends report_preview {
     private function activiyoverweeks() : array {
         $date = new \DateTime();
         $date->modify('-1 week');
-        $now = $date->getTimestamp();
+        $now = $date->getTimestamp()+86400*7;
         $date->modify('-28 week');
 
         $date->modify('Monday this week'); // Get start of week.
@@ -97,7 +97,7 @@ class preview extends report_preview {
         $tstrweek = get_string('week', 'lareport_coursedashboard');
         $strclicks = get_string('clicks', 'lareport_coursedashboard');
 
-        $date->modify(($xmin - 1) . ' week');
+        $date->modify(($xmin) . ' week');
 
         $lastweekinpast = -100;
 
@@ -111,9 +111,6 @@ class preview extends report_preview {
             $ticktext[] = $weeknumber;
 
             $clickcount = $week->clicks ?? 0;
-            if ($clickcount < $privacythreshold) {
-                $clickcount = 0;
-            }
 
             $startofweektimestamp = $date->getTimestamp();
             $date->modify('+6 days');
