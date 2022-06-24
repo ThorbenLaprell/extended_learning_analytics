@@ -70,12 +70,16 @@ class preview extends report_preview {
         $maxhits = (current($weeks))->hits;
 
         foreach ($weeks as $item) {
-            var_dump($item);
             $hits = $item->hits;
             $typestr = $DB->get_record('modules', array('id' => $item->moduleid))->name;
+            $courseid = $DB->get_record('course_modules', array('id' => $item->activityid))->course;
+            $modinfo = get_fast_modinfo($courseid);
+            $cm = $modinfo->get_cm($item->activityid);
+            $name = $cm->name;
+
             $url = new \moodle_url('/mod/' . $typestr . '/view.php', ['id' => $item->activityid]);
             $tabletypes->add_row([
-                "<a href='{$url}'>{$typestr}</a>",
+                "<a href='{$url}'>{$name}</a>",
                 table::fancyNumberCell(
                     $hits,
                     $maxhits,
