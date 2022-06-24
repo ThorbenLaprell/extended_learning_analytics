@@ -66,13 +66,14 @@ class preview extends report_preview {
         $weeks = query_helper::query_weekly_activity();
 
         $tabletypes = new table();
-        $tabletypes->set_header_local(['courses']);
+        $tabletypes->set_header_local(['activities']);
         $maxhits = (current($weeks))->hits;
 
         foreach ($weeks as $item) {
+            var_dump($item);
             $hits = $item->hits;
-            $url = new \moodle_url('/course/view.php', ['id' => $item->courseid]);
-            $typestr = $DB->get_record('course', array('id' => $item->courseid))->fullname;
+            $typestr = $DB->get_record('modules', array('id' => $item->moduleid))->name;
+            $url = new \moodle_url('/mod/' . $typestr . '/view.php', ['id' => $item->activityid]);
             $tabletypes->add_row([
                 "<a href='{$url}'>{$typestr}</a>",
                 table::fancyNumberCell(
