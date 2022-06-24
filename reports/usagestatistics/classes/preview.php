@@ -32,18 +32,15 @@ use elareport_usagestatistics\query_helper;
 
 class preview extends report_preview {
 
-    const X_MIN = 0;
-    const X_MAX = 29;
-
     public static function content(): array {
         return self::activiyoverweeks();
     }
 
     private function activiyoverweeks() : array {
+        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
         $date = new \DateTime();
-        $date->modify('-1 week');
-        $now = $date->getTimestamp()+86400*7;
-        $date->modify('-28 week');
+        $now = $date->getTimestamp();
+        $date->modify('-' . $lifetimeInWeeks . ' week');
 
         $date->modify('Monday this week'); // Get start of week.
 
@@ -51,9 +48,7 @@ class preview extends report_preview {
         $endoflastweek->modify('Sunday last week');
 
         $weeks = query_helper::query_weekly_activity();
-        $weeks = array_slice($weeks, count($weeks) - 30);
-
-        $privacythreshold = get_config('local_extended_learning_analytics', 'dataprivacy_threshold');
+        //$weeks = array_slice($weeks, count($weeks) - $lifetimeInWeeks);
 
         $plot = new plot();
         $x = [];
@@ -84,8 +79,14 @@ class preview extends report_preview {
         }
         $ymax = $ymax * 1.1;
 
-        $xmin = self::X_MIN;
-        $xmax = self::X_MAX;
+        $xmin = 0;
+        for ($i=0; $i<count($weeks); $i++) {
+            if($weeks[$i]->clicks > 0) {
+                $xmin = $i-1;
+                break;
+            }
+        }
+        $xmax = $lifetimeInWeeks;
 
         $tickvals = [];
         $ticktext = [];
@@ -102,7 +103,7 @@ class preview extends report_preview {
         $lastweekinpast = -100;
 
         for ($i = $xmin; $i <= $xmax; $i++) {
-            $week = $weeks[$i] ?? new \stdClass();
+            $week = $weeks[$i+1] ?? new \stdClass();
 
             $weeknumber = ($i <= 0) ? ($i - 1) : $i;
 
@@ -122,9 +123,6 @@ class preview extends report_preview {
                 $weekstarttext = userdate($startofweektimestamp, $dateformat);
                 $weekendtext = userdate($date->getTimestamp(), $dateformat);
                 $textClicks = $clickcount;
-                if ($clickcount < $privacythreshold) {
-                    $textClicks = "< {$privacythreshold}";
-                }
 
                 $texts[] = "<b>{$tstrweek} {$weeknumber}</b> ({$weekstarttext} - {$weekendtext})<br><br>{$textClicks} {$strclicks}";
                 $lastweekinpast = $i;
@@ -149,7 +147,7 @@ class preview extends report_preview {
             'type' => 'rect',
             'xref' => 'x',
             'yref' => 'paper',
-            'x0' => (self::X_MIN - 0.5),
+            'x0' => ($xmin - 0.5),
             'x1' => ($lastweekinpast + 0.5),
             'y0' => -0.07,
             'y1' => 1,
@@ -158,7 +156,7 @@ class preview extends report_preview {
             'line' => [ 'width' => 0 ],
             'layer' => 'below'
         ];
-        if ($lastweekinpast !== self::X_MIN && $lastweekinpast !== self::X_MAX) {
+        if ($lastweekinpast !== $xmin && $lastweekinpast !== $xmax) {
             $shapes[] = [ // Line shows in which week are currently are.
                 'type' => 'line',
                 'xref' => 'x',
