@@ -82,6 +82,9 @@ class preview extends report_preview {
                 )
             ]);
         }
-        return [$tabletypes];
+        return [
+            '<h3 class="text">Most visited courses</h3>',
+            $tabletypes
+        ];
     }
 }

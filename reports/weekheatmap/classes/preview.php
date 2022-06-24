@@ -121,6 +121,7 @@ class preview extends report_preview {
         $plot->set_layout($layout);
         $plot->set_height(400);
         return [
+            '<h3 class="text">Hits at daytime in week</h3>',
             $plot
         ];
     }

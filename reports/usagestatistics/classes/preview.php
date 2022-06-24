@@ -233,6 +233,7 @@ class preview extends report_preview {
         $plot->set_height(300);
 
         return [
+            '<h3 class="text">Visits per Week</h3>',
             $plot
         ];
     }

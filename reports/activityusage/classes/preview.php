@@ -115,11 +115,12 @@ class preview extends report_preview {
         $chart2->set_labels($labels2);
 
         return [
+            '<h3 class="text">Most visited activity</h3>',
             $tabletypes,
             '<h3 class="text">Activity Pie Charts</h3>',
             '<h4 class="text">Most visited activity types</h4>',
             $chart,
-            '<h4 class="text">Most created activity</h4>',
+            '<h4 class="text">Most created activity types</h4>',
             $chart2
         ];
     }
