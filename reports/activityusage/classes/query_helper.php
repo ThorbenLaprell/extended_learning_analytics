@@ -49,6 +49,44 @@ SQL;
         return $DB->get_records_sql($query, [$startdate->getTimestamp()]);
     }
 
+    public static function query_dominant_activity() : array {
+        global $DB;
+
+        $startdate = new \DateTime();
+        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
+        $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
+        $startdate->modify('Monday this week'); // Get start of week.
+
+        $query = <<<SQL
+        SELECT m.name,
+        SUM(a.hits) AS hits
+        FROM {elanalytics_activityusage} a
+        JOIN {modules} m
+        ON m.id = a.moduleid
+        WHERE a.timecreated >= ?
+        GROUP BY m.name
+        ORDER BY hits DESC
+SQL;
+
+        return $DB->get_records_sql($query, [$startdate->getTimestamp()]);
+    }
+
+    public static function query_dominant_activity_type() : array {
+        global $DB;
+
+        $query = <<<SQL
+        SELECT m.name AS name,
+        COUNT(*) AS modulecount
+        FROM {course_modules} c
+        JOIN {modules} m
+        ON c.module = m.id
+        GROUP BY module
+        ORDER BY modulecount DESC
+SQL;
+
+        return $DB->get_records_sql($query, []);
+    }
+
     public static function query_activity_at_dayX($date) : array {
         global $DB;
         $timestamp = $date->getTimestamp();

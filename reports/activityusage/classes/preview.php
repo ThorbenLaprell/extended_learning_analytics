@@ -87,6 +87,40 @@ class preview extends report_preview {
                 )
             ]);
         }
-        return [$tabletypes];
+
+        $dominants = query_helper::query_dominant_activity();
+        $activitiescount = array();
+        $activitiesname = array();
+        foreach($dominants as $dominant) {
+            array_push($activitiescount, $dominant->hits);
+            array_push($activitiesname, $dominant->name);
+        }
+        $sales = new \core\chart_series('Dominant Activities', $activitiescount);
+        $labels = $activitiesname;
+        $chart = new \core\chart_pie();
+        $chart->add_series($sales);
+        $chart->set_labels($labels);
+
+        $dominants2 = query_helper::query_dominant_activity_type();
+        $activitiescount2 = array();
+        $activitiesname2 = array();
+        foreach($dominants2 as $dominant) {
+            array_push($activitiescount2, $dominant->modulecount);
+            array_push($activitiesname2, $dominant->name);
+        }
+        $sales2 = new \core\chart_series('Dominant Activities', $activitiescount2);
+        $labels2 = $activitiesname2;
+        $chart2 = new \core\chart_pie();
+        $chart2->add_series($sales2);
+        $chart2->set_labels($labels2);
+
+        return [
+            $tabletypes,
+            '<h3 class="text">Activity Pie Charts</h3>',
+            '<h4 class="text">Most visited activity types</h4>',
+            $chart,
+            '<h4 class="text">Most created activity</h4>',
+            $chart2
+        ];
     }
 }
