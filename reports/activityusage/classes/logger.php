@@ -73,19 +73,16 @@ class logger {
     //saves the number of hits globally for the day which starts with date
     public static function query_and_save_dayX($date) {
         global $DB;
-        $query = <<<SQL
-        SELECT id
-        FROM {course}
-SQL;
-        $courseids = $DB->get_records_sql($query);
         $formatedDate = $date->format('Ymd');
-        foreach($courseids as $courseid) {
-            $entry = new stdClass();
-            $entry->timecreated = $date->getTimestamp()+43200;
-            $entry->date = $formatedDate;
-            $entry->courseid = $courseid->id;
-            $entry->hits = current(query_helper::query_activity_at_dayXInCourse($date, $courseid->id))->hits;
-            if($entry->hits>0) {
+        $entry = new stdClass();
+        $entry->timecreated = $date->getTimestamp()+43200;
+        $entry->date = $formatedDate;
+        $resolves = query_helper::query_activity_at_dayX($date);
+        foreach($resolves as $resolve) {
+            if($resolve) {
+                $entry->activityid = $resolve->id;
+                $entry->moduleid = $resolve->moduleid;
+                $entry->hits = $resolve->hits;
                 self::insert_or_update($entry);
             }
         }
@@ -97,9 +94,9 @@ SQL;
         SELECT *
         FROM {elanalytics_activityusage} h
         WHERE h.date = ?
-        AND h.courseid = ?
+        AND h.activityid = ?
 SQL;
-        $record = $DB->get_record_sql($query, [$entry->date, $entry->courseid]);
+        $record = $DB->get_record_sql($query, [$entry->date, $entry->activityid]);
         if($record != false) {
             $entry->id = $record->id;
             $DB->update_record('elanalytics_activityusage', $entry);

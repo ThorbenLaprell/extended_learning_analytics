@@ -37,30 +37,38 @@ class query_helper {
         $startdate->modify('Monday this week'); // Get start of week.
 
         $query = <<<SQL
-        SELECT courseid AS courseid,
-            SUM(hits) AS hits
+        SELECT activityid AS activityid,
+        moduleid AS moduleid,
+        SUM(hits) AS hits
         FROM {elanalytics_activityusage}
         WHERE timecreated >= ?
-        GROUP BY courseid
+        GROUP BY activityid
         ORDER BY hits DESC
 SQL;
 
         return $DB->get_records_sql($query, [$startdate->getTimestamp()]);
     }
 
-    public static function query_activity_at_dayXInCourse($date, $courseid) : array {
+    public static function query_activity_at_dayX($date) : array {
         global $DB;
         $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + 86400;
 
         $query = <<<SQL
-        SELECT COUNT(*) hits
+        SELECT COUNT(*) AS hits,
+        m.id AS id,
+        m.module AS moduleid
         FROM {logstore_lanalytics_log} l
+        JOIN {context} c
+        ON l.contextid = c.id
+        JOIN {course_modules} m
+        ON c.instanceid = m.id
         WHERE l.timecreated >= ?
         AND l.timecreated < ?
-        AND l.courseid = ?
+        GROUP BY instanceid
+        ORDER BY instanceid
 SQL;
 
-        return $DB->get_records_sql($query, [$timestamp, $endtimestamp, $courseid]);
+        return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);
     }
 }
