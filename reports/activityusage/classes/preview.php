@@ -52,7 +52,8 @@ class preview extends report_preview {
     }
 
     private function activiyoverweeks() : array {
-        global $DB;
+        global $DB, $CFG;
+        $CFG->chart_colorset = ['#6495ED', '#B0C4DE', '#B0E0E6', '#5F9EA0'];
         $date = new \DateTime();
         $date->modify('-1 week');
         $now = $date->getTimestamp();
