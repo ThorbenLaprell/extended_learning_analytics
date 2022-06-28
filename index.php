@@ -22,7 +22,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_extended_learning_analytics\router;
+use local_extended_learning_analytics\dashboard;
 
 require(__DIR__ . '/../../config.php');
 
@@ -36,20 +36,19 @@ $url = new moodle_url('/local/extended_learning_analytics/index.php/reports/dash
 $PAGE->set_url($url);
 
 // Header of page (we simply use the course name to be consitent with other pages)
-$PAGE->set_pagelayout('course');
+$PAGE->set_pagelayout('report');
 
 // title of page.
 $title = get_string('navigation_link', 'local_extended_learning_analytics');
 $PAGE->set_title($title);
 
-$resultinghtml = router::run($_SERVER['REQUEST_URI'] . "/reports/dashboard");
-
 $output = $PAGE->get_renderer('local_learning_analytics');
 
 $PAGE->requires->css('/local/learning_analytics/static/styles.css?4');
 $mainoutput = $output->render_from_template('local_learning_analytics/course', [
-    'content' => $resultinghtml
+    'content' => dashboard::run()
 ]);
+
 echo $output->header();
 echo $mainoutput;
 echo $output->footer();

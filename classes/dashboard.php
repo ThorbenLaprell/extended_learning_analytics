@@ -22,12 +22,13 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_extended_learning_analytics;
 defined('MOODLE_INTERNAL') || die();
 
 use \local_extended_learning_analytics\report_base;
 use \local_extended_learning_analytics\logger;
 
-class elareport_dashboard extends report_base {
+class dashboard extends report_base {
 
     public function run(): array {
         global $PAGE, $DB, $OUTPUT, $CFG;
