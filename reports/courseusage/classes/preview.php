@@ -63,12 +63,11 @@ class preview extends report_preview {
         $endoflastweek = new \DateTime();
         $endoflastweek->modify('Sunday last week');
 
-        $weeks = query_helper::query_weekly_activity();
+        $weeks = query_helper::query_course_activity();
 
         $tabletypes = new table();
         $tabletypes->set_header_local(['courses']);
         $maxhits = (current($weeks))->hits;
-
         $i = 0;
         foreach ($weeks as $item) {
             if($i == 20) {
@@ -88,9 +87,37 @@ class preview extends report_preview {
                 $i++;
             }
         }
+
+        $weeks2 = query_helper::query_course_category_activity();
+
+        $tabletypes2 = new table();
+        $tabletypes2->set_header_local(['courses']);
+        $maxhits = (current($weeks2))->hits;
+        $i = 0;
+        foreach ($weeks2 as $item) {
+            if($i == 20) {
+                break;
+            } else {
+                $hits = $item->hits;
+                $url = new \moodle_url('/course/management.php', ['categoryid' => $item->id]);
+                $typestr = $DB->get_record('course_categories', array('id' => $item->id))->name;
+                $tabletypes2->add_row([
+                    "<a href='{$url}'>{$typestr}</a>",
+                    table::fancyNumberCell(
+                        $hits,
+                        $maxhits,
+                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                    )
+                ]);
+                $i++;
+            }
+        }
+
         return [
             '<h3 class="text">Most visited courses</h3>',
-            $tabletypes
+            $tabletypes,
+            '<h3 class="text">Most visited Toplevel Course Categories</h3>',
+            $tabletypes2
         ];
     }
 }

@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class query_helper {
 
-    public static function query_weekly_activity() : array {
+    public static function query_course_activity() : array {
         global $DB;
 
         $startdate = new \DateTime();
@@ -42,6 +42,29 @@ class query_helper {
         FROM {elanalytics_courseusage}
         WHERE timecreated >= ?
         GROUP BY courseid
+        ORDER BY hits DESC
+SQL;
+
+        return $DB->get_records_sql($query, [$startdate->getTimestamp()]);
+    }
+
+    public static function query_course_category_activity() : array {
+        global $DB;
+
+        $startdate = new \DateTime();
+        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
+        $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
+        $startdate->modify('Monday this week'); // Get start of week.
+
+        $query = <<<SQL
+        SELECT cc.id, SUM(ec.hits) AS hits
+        FROM {course_categories} cc
+        JOIN {course} c
+        ON cc.id = c.category
+        JOIN {elanalytics_courseusage} ec
+        ON c.id = ec.courseid
+        WHERE cc.depth = 1
+        GROUP BY cc.id
         ORDER BY hits DESC
 SQL;
 
