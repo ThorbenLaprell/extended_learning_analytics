@@ -22,13 +22,13 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace elareport_forumusage;
+namespace elareport_eventstatistics;
 
 defined('MOODLE_INTERNAL') || die();
 
 class query_helper {
 
-    public static function query_weekly_activity() : array {
+    public static function query_event_activity() : array {
         global $DB;
 
         $startdate = new \DateTime();
@@ -37,74 +37,33 @@ class query_helper {
         $startdate->modify('Monday this week'); // Get start of week.
 
         $query = <<<SQL
-        SELECT activityid AS activityid,
-        moduleid AS moduleid,
-        SUM(hits) AS hits
-        FROM {elanalytics_forumusage}
-        WHERE timecreated >= ?
-        GROUP BY activityid
+        SELECT e.eventid AS eventid,
+            le.eventname,
+            SUM(e.hits) AS hits
+        FROM {elanalytics_eventstatistics} e
+        JOIN {logstore_lanalytics_evtname} le
+        WHERE e.timecreated >= ?
+        GROUP BY e.eventid
         ORDER BY hits DESC
 SQL;
 
         return $DB->get_records_sql($query, [$startdate->getTimestamp()]);
     }
 
-    public static function query_dominant_activity() : array {
-        global $DB;
-
-        $startdate = new \DateTime();
-        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
-        $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
-        $startdate->modify('Monday this week'); // Get start of week.
-
-        $query = <<<SQL
-        SELECT m.name,
-        SUM(a.hits) AS hits
-        FROM {elanalytics_forumusage} a
-        JOIN {modules} m
-        ON m.id = a.moduleid
-        WHERE a.timecreated >= ?
-        GROUP BY m.name
-        ORDER BY hits DESC
-SQL;
-
-        return $DB->get_records_sql($query, [$startdate->getTimestamp()]);
-    }
-
-    public static function query_dominant_activity_type() : array {
-        global $DB;
-
-        $query = <<<SQL
-        SELECT m.name AS name,
-        COUNT(*) AS modulecount
-        FROM {course_modules} c
-        JOIN {modules} m
-        ON c.module = m.id
-        GROUP BY module
-        ORDER BY modulecount DESC
-SQL;
-
-        return $DB->get_records_sql($query, []);
-    }
-
-    public static function query_activity_at_dayX($date) : array {
+    public static function query_events($date) : array {
         global $DB;
         $timestamp = $date->getTimestamp();
         $endtimestamp = $timestamp + 86400;
 
         $query = <<<SQL
-        SELECT COUNT(*) AS hits,
-        m.id AS id,
-        m.module AS moduleid
+        SELECT l.eventid AS eventid, COUNT(*) AS hits
         FROM {logstore_lanalytics_log} l
-        JOIN {context} c
-        ON l.contextid = c.id
-        JOIN {course_modules} m
-        ON c.instanceid = m.id
+        JOIN {logstore_lanalytics_evtname} e
+        ON l.eventid = e.id
         WHERE l.timecreated >= ?
         AND l.timecreated < ?
-        GROUP BY instanceid
-        ORDER BY instanceid
+        GROUP BY eventid
+        ORDER BY hits DESC
 SQL;
 
         return $DB->get_records_sql($query, [$timestamp, $endtimestamp]);

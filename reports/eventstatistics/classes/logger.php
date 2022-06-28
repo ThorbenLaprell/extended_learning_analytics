@@ -22,11 +22,11 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace elareport_forumusage;
+namespace elareport_eventstatistics;
 
 defined('MOODLE_INTERNAL') || die();
 
-use elareport_forumusage\query_helper;
+use elareport_eventstatistics\query_helper;
 use stdClass;
 
 class logger {
@@ -39,8 +39,8 @@ class logger {
             $begindate->format('Ymd');
             $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
             $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
-            if($DB->record_exists('elanalytics_forumusage', array())) {
-                $inputs = $DB->get_records('elanalytics_forumusage');
+            if($DB->record_exists('elanalytics_eventstatistics', array())) {
+                $inputs = $DB->get_records('elanalytics_eventstatistics');
                 $max = self::findMaxDate($inputs);
                 $begindate = new \DateTime($max);
             }
@@ -74,15 +74,14 @@ class logger {
     public static function query_and_save_dayX($date) {
         global $DB;
         $formatedDate = $date->format('Ymd');
-        $entry = new stdClass();
-        $entry->timecreated = $date->getTimestamp()+43200;
-        $entry->date = $formatedDate;
-        $resolves = query_helper::query_activity_at_dayX($date);
-        foreach($resolves as $resolve) {
-            if($resolve) {
-                $entry->activityid = $resolve->id;
-                $entry->moduleid = $resolve->moduleid;
-                $entry->hits = $resolve->hits;
+        $dayres = query_helper::query_events($date);
+        foreach($dayres as $res) {
+            $entry = new stdClass();
+            $entry->timecreated = $date->getTimestamp()+43200;
+            $entry->date = $formatedDate;
+            $entry->eventid = $res->eventid;
+            $entry->hits = $res->hits;
+            if($entry->hits>0) {
                 self::insert_or_update($entry);
             }
         }
@@ -92,16 +91,16 @@ class logger {
         global $DB;
         $query = <<<SQL
         SELECT *
-        FROM {elanalytics_forumusage} h
+        FROM {elanalytics_eventstatistics} h
         WHERE h.date = ?
-        AND h.activityid = ?
+        AND h.eventid = ?
 SQL;
-        $record = $DB->get_record_sql($query, [$entry->date, $entry->activityid]);
+        $record = $DB->get_record_sql($query, [$entry->date, $entry->eventid]);
         if($record != false) {
             $entry->id = $record->id;
-            $DB->update_record('elanalytics_forumusage', $entry);
+            $DB->update_record('elanalytics_eventstatistics', $entry);
         } else {
-            $DB->insert_record('elanalytics_forumusage', $entry);
+            $DB->insert_record('elanalytics_eventstatistics', $entry);
         }
     }
 }
