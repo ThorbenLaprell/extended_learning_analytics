@@ -38,24 +38,6 @@ $settings = new admin_settingpage('local_extended_learning_analytics_general_set
 if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configtext(
-        'local_extended_learning_analytics/dashboard_boxes',
-        'dashboard_boxes',
-        get_string('setting_reports_to_show', 'local_extended_learning_analytics'),
-        'usagestatistics:8,weekheatmap:8,courseusage:8',
-        PARAM_RAW,
-        60
-    ));
-
-    $settings->add(new admin_setting_configtext(
-        'local_extended_learning_analytics/reports_to_log',
-        'reports_to_log',
-        get_string('setting_reports_to_log', 'local_extended_learning_analytics'),
-        'usagestatistics,weekheatmap,courseusage',
-        PARAM_RAW,
-        60
-    ));
-
-    $settings->add(new admin_setting_configtext(
         'local_extended_learning_analytics/lifetimeInWeeks',
         'lifetimeInWeeks',
         get_string('setting_lifetimeInWeeks', 'local_extended_learning_analytics'),

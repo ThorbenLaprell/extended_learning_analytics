@@ -30,13 +30,12 @@ class logger {
 
     public static function run() {
         global $PAGE, $DB, $OUTPUT, $CFG;
-        $reportsdump = get_config('local_extended_learning_analytics', 'reports_to_log');
-        $reports = explode(',', $reportsdump);
+        $reports = \core_plugin_manager::instance()->get_plugins_of_type('elareport');
         foreach ($reports as $report) {
-            $logger = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$report}/classes/logger.php";
+            $logger = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$report->name}/classes/logger.php";
             if (file_exists($logger)) {
                 include_once($logger);
-                $loggerClass = "elareport_{$report}\\logger";
+                $loggerClass = "elareport_{$report->name}\\logger";
                 $loggerClass::run();
             }
         }

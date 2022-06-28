@@ -33,28 +33,23 @@ class elareport_dashboard extends report_base {
         global $PAGE, $DB, $OUTPUT, $CFG;
         $PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/styles.css?3');
 
-        $previewboxes = get_config('local_extended_learning_analytics', 'dashboard_boxes');
-        $splitpreviewkeys = explode(',', $previewboxes);
-
         $subpluginsboxes = [];
 
         $logger = new logger();
         $logger->run();
 
-        foreach ($splitpreviewkeys as $plugininfo) {
-            $pluginsplit = explode(':', $plugininfo);
-            $pluginkey = $pluginsplit[0];
+        $reports = \core_plugin_manager::instance()->get_plugins_of_type('elareport');
+        foreach ($reports as $report) {
             $pluginsize = 12;
-            $previewfile = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$pluginkey}/classes/preview.php";
+            $previewfile = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$report->name}/classes/preview.php";
             if (file_exists($previewfile)) {
                 include_once($previewfile);
-                $previewClass = "elareport_{$pluginkey}\\preview";
+                $previewClass = "elareport_{$report->name}\\preview";
                 $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content(), ["</div>"]);
             }
         }
 
         return array_merge(
-            [self::heading(get_string('pluginname', 'elareport_dashboard'), true)],
             ["<div class='row reportboxes'>"],
             $subpluginsboxes,
             ["</div>"]
