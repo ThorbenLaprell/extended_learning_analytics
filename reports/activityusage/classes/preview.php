@@ -85,6 +85,7 @@ class preview extends report_preview {
                 $url = new \moodle_url('/mod/' . $typestr . '/view.php', ['id' => $item->activityid]);
                 $tabletypes->add_row([
                     "<a href='{$url}'>{$name}</a>",
+                    "<a'>{$typestr}</a>",
                     table::fancyNumberCell(
                         $hits,
                         $maxhits,
@@ -107,7 +108,7 @@ class preview extends report_preview {
             } else {
                 $hits = $item->hits;
                 $tabletypes2->add_row([
-                    "<div'>{$item->name}</div>",
+                    "<a'>{$item->name}</a>",
                     table::fancyNumberCell(
                         $hits,
                         $maxhits,
@@ -128,7 +129,7 @@ class preview extends report_preview {
             } else {
                 $hits = $item->modulecount;
                 $tabletypes3->add_row([
-                    "<div'>{$item->name}</div>",
+                    "<a'>{$item->name}</a>",
                     table::fancyNumberCell(
                         $hits,
                         $maxhits,
