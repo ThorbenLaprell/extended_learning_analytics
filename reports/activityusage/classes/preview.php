@@ -94,40 +94,94 @@ class preview extends report_preview {
             }
         }
 
-        $dominants = query_helper::query_dominant_activity();
-        $activitiescount = array();
-        $activitiesname = array();
-        foreach($dominants as $dominant) {
-            array_push($activitiescount, $dominant->hits);
-            array_push($activitiesname, $dominant->name);
-        }
-        $sales = new \core\chart_series('Dominant Activities', $activitiescount);
-        $labels = $activitiesname;
-        $chart = new \core\chart_pie();
-        $chart->add_series($sales);
-        $chart->set_labels($labels);
+        $weeks2 = query_helper::query_dominant_activity();
+        $weeks3 = query_helper::query_dominant_activity_type();
 
-        $dominants2 = query_helper::query_dominant_activity_type();
-        $activitiescount2 = array();
-        $activitiesname2 = array();
-        foreach($dominants2 as $dominant) {
-            array_push($activitiescount2, $dominant->modulecount);
-            array_push($activitiesname2, $dominant->name);
+        $tabletypes2 = new table();
+        $tabletypes2->set_header(['Most visited activity types']);
+        $maxhits = (current($weeks2))->hits;
+        $i = 0;
+        foreach ($weeks2 as $item) {
+            if($i == 20) {
+                break;
+            } else {
+                $hits = $item->hits;
+                $tabletypes2->add_row([
+                    "<div'>{$item->name}</div>",
+                    table::fancyNumberCell(
+                        $hits,
+                        $maxhits,
+                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                    )
+                ]);
+                $i++;
+            }
         }
-        $sales2 = new \core\chart_series('Dominant Activities', $activitiescount2);
+
+        $tabletypes3 = new table();
+        $tabletypes3->set_header(['Most visited activity types']);
+        $maxhits = (current($weeks3))->modulecount;
+        $i = 0;
+        foreach ($weeks3 as $item) {
+            if($i == 20) {
+                break;
+            } else {
+                $hits = $item->modulecount;
+                $tabletypes3->add_row([
+                    "<div'>{$item->name}</div>",
+                    table::fancyNumberCell(
+                        $hits,
+                        $maxhits,
+                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                    )
+                ]);
+                $i++;
+            }
+        }
+
+        $activitiescount2 = array();
+        $expensescount2 = array();
+        $activitiesname2 = array();
+        $sum2 = 0;
+        foreach($weeks2 as $week) {
+            $sum2 += $week->hits;
+        }
+        $sum3 = 0;
+        foreach($weeks3 as $week) {
+            $sum3 += $week->modulecount;
+        }
+        $max2 = $sum2 * 0.01;
+        $max3 = $sum3 * 0.01;
+        foreach($weeks3 as $week) {
+            array_push($expensescount2, $week->modulecount/$max3);
+            if($weeks2[$week->name]) {
+                array_push($activitiescount2, $weeks2[$week->name]->hits/$max2);
+                array_push($activitiesname2, $week->name);
+            } else {
+                array_push($activitiescount2, 0);
+                array_push($activitiesname2, $week->name);
+            }
+        }
+        $sales2 = new \core\chart_series('Most visited activity types', $activitiescount2);
+        $expenses2 = new \core\chart_series('Most created activity types', $expensescount2);
         $labels2 = $activitiesname2;
-        $chart2 = new \core\chart_pie();
-        $chart2->add_series($sales2);
-        $chart2->set_labels($labels2);
+        $chart = new \core\chart_bar();
+        $chart->set_horizontal(true);
+        $chart->add_series($sales2);
+        $chart->add_series($expenses2);
+        $chart->set_labels($labels2);
+        $chart->get_xaxis(0, true)->set_label("relative hits/instances in %");
+        $chart->get_yaxis(0, true)->set_label("Activity types");
 
         return [
             '<h3 class="text">Most visited activity</h3>',
             $tabletypes,
-            '<h3 class="text">Activity Pie Charts</h3>',
-            '<h4 class="text">Most visited activity types</h4>',
-            $chart,
-            '<h4 class="text">Most created activity types</h4>',
-            $chart2
+            '<h3 class="text">Most visited activity type</h3>',
+            $tabletypes2,
+            '<h3 class="text">Most used activity type</h3>',
+            $tabletypes3,
+            '<h3 class="text">Activity type chart</h3>',
+            $chart
         ];
     }
 }
