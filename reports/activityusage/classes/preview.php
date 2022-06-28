@@ -70,23 +70,28 @@ class preview extends report_preview {
         $tabletypes->set_header_local(['activities']);
         $maxhits = (current($weeks))->hits;
 
+        $i = 0;
         foreach ($weeks as $item) {
-            $hits = $item->hits;
-            $typestr = $DB->get_record('modules', array('id' => $item->moduleid))->name;
-            $courseid = $DB->get_record('course_modules', array('id' => $item->activityid))->course;
-            $modinfo = get_fast_modinfo($courseid);
-            $cm = $modinfo->get_cm($item->activityid);
-            $name = $cm->name;
+            if($i == 20) {
+                break;
+            } else {
+                $hits = $item->hits;
+                $typestr = $DB->get_record('modules', array('id' => $item->moduleid))->name;
+                $courseid = $DB->get_record('course_modules', array('id' => $item->activityid))->course;
+                $modinfo = get_fast_modinfo($courseid);
+                $cm = $modinfo->get_cm($item->activityid);
+                $name = $cm->name;
 
-            $url = new \moodle_url('/mod/' . $typestr . '/view.php', ['id' => $item->activityid]);
-            $tabletypes->add_row([
-                "<a href='{$url}'>{$name}</a>",
-                table::fancyNumberCell(
-                    $hits,
-                    $maxhits,
-                    self::$markercolorstext['page'] ?? self::$markercolortextdefault
-                )
-            ]);
+                $url = new \moodle_url('/mod/' . $typestr . '/view.php', ['id' => $item->activityid]);
+                $tabletypes->add_row([
+                    "<a href='{$url}'>{$name}</a>",
+                    table::fancyNumberCell(
+                        $hits,
+                        $maxhits,
+                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                    )
+                ]);
+            }
         }
 
         $dominants = query_helper::query_dominant_activity();

@@ -69,18 +69,24 @@ class preview extends report_preview {
         $tabletypes->set_header_local(['courses']);
         $maxhits = (current($weeks))->hits;
 
+        $i = 0;
         foreach ($weeks as $item) {
-            $hits = $item->hits;
-            $url = new \moodle_url('/course/view.php', ['id' => $item->courseid]);
-            $typestr = $DB->get_record('course', array('id' => $item->courseid))->fullname;
-            $tabletypes->add_row([
-                "<a href='{$url}'>{$typestr}</a>",
-                table::fancyNumberCell(
-                    $hits,
-                    $maxhits,
-                    self::$markercolorstext['page'] ?? self::$markercolortextdefault
-                )
-            ]);
+            if($i == 20) {
+                break;
+            } else {
+                $hits = $item->hits;
+                $url = new \moodle_url('/course/view.php', ['id' => $item->courseid]);
+                $typestr = $DB->get_record('course', array('id' => $item->courseid))->fullname;
+                $tabletypes->add_row([
+                    "<a href='{$url}'>{$typestr}</a>",
+                    table::fancyNumberCell(
+                        $hits,
+                        $maxhits,
+                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                    )
+                ]);
+                $i++;
+            }
         }
         return [
             '<h3 class="text">Most visited courses</h3>',

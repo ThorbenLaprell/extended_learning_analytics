@@ -143,7 +143,7 @@ class preview extends report_preview {
                     'x1' => ($i - 0.5),
                     'y0' => -0.07,
                     'y1' => 1,
-                    'line' => [ 'color' => '#0000FF', 'width' => 2 ],
+                    'line' => [ 'color' => '#2B2B2B', 'width' => 1.5 ],
                     'layer' => 'below'
                 ];
             } else {
