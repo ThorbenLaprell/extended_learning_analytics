@@ -97,7 +97,7 @@ class logger {
         AND h.date = ?
         AND h.hour = ?
 SQL;
-        $record = $DB->get_record_sql($query, [$entry->weekmodaydate, $entry->date, $entry->hour]);
+        $record = $DB->get_record_sql($query, [$entry->weekmondaydate, $entry->date, $entry->hour]);
         if($record != false) {
             $entry->id = $record->id;
             $DB->update_record('elanalytics_weekheatmap', $entry);

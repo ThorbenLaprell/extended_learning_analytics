@@ -101,7 +101,9 @@ class preview extends report_preview {
         $date->modify(($xmin) . ' week');
 
         $lastweekinpast = -100;
+        $lastmonth;
 
+        $ticktext = array();
         for ($i = $xmin; $i <= $xmax; $i++) {
             $week = $weeks[$i+1] ?? new \stdClass();
 
@@ -109,7 +111,8 @@ class preview extends report_preview {
 
             $x[] = $i;
             $tickvals[] = $i;
-            $ticktext[] = $weeknumber;
+            $thatdate = new \DateTime($week->date);
+            array_push($ticktext, $thatdate->format("d M Y"));
 
             $clickcount = $week->clicks ?? 0;
 
@@ -130,17 +133,32 @@ class preview extends report_preview {
 
             $date->modify('+1 day');
 
-            $shapes[] = [
-                'type' => 'line',
-                'xref' => 'x',
-                'yref' => 'paper',
-                'x0' => ($i - 0.5),
-                'x1' => ($i - 0.5),
-                'y0' => -0.07,
-                'y1' => 1,
-                'line' => [ 'color' => '#aaa', 'width' => 1 ],
-                'layer' => 'below'
-            ];
+            if($lastmonth != $thatdate->format("M")) {
+                $lastmonth = $thatdate->format("M");
+                $shapes[] = [
+                    'type' => 'line',
+                    'xref' => 'x',
+                    'yref' => 'paper',
+                    'x0' => ($i - 0.5),
+                    'x1' => ($i - 0.5),
+                    'y0' => -0.07,
+                    'y1' => 1,
+                    'line' => [ 'color' => '#0000FF', 'width' => 2 ],
+                    'layer' => 'below'
+                ];
+            } else {
+                $shapes[] = [
+                    'type' => 'line',
+                    'xref' => 'x',
+                    'yref' => 'paper',
+                    'x0' => ($i - 0.5),
+                    'x1' => ($i - 0.5),
+                    'y0' => -0.07,
+                    'y1' => 1,
+                    'line' => [ 'color' => '#aaa', 'width' => 1 ],
+                    'layer' => 'below'
+                ];
+            }
         }
 
         $shapes[] = [
@@ -198,10 +216,10 @@ class preview extends report_preview {
             't' => 10,
             'r' => 0,
             'l' => 40,
-            'b' => 40
+            'b' => 120
         ];
         $layout->xaxis = [
-            'ticklen' => 0,
+            'ticklen' => 10,
             'showgrid' => false,
             'zeroline' => false,
             'range' => [ ($xmin - 0.5), ($xmax + 0.5) ],
@@ -230,7 +248,7 @@ class preview extends report_preview {
         $layout->shapes = $shapes;
 
         $plot->set_layout($layout);
-        $plot->set_height(300);
+        $plot->set_height(400);
 
         return [
             '<h3 class="text">Visits per Week</h3>',

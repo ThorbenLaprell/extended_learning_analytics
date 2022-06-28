@@ -40,7 +40,8 @@ class query_helper {
         $query = <<<SQL
         SELECT (FLOOR((h.timecreated - {$mondaytimestamp}) / (7 * 60 * 60 * 24)) + 1)
         AS WEEK,
-        SUM(h.hits) AS clicks
+        SUM(h.hits) AS clicks,
+        h.date AS date
         FROM {elanalytics_usagestatistics} h
         GROUP BY week
         ORDER BY week;
