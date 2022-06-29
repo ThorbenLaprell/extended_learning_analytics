@@ -42,6 +42,7 @@ class query_helper {
             SUM(e.hits) AS hits
         FROM {elanalytics_eventstatistics} e
         JOIN {logstore_lanalytics_evtname} le
+        ON e.eventid = le.id
         WHERE e.timecreated >= ?
         GROUP BY e.eventid
         ORDER BY hits DESC
