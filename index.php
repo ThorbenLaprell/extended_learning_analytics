@@ -23,6 +23,7 @@
  */
 
 use local_extended_learning_analytics\dashboard;
+use \local_extended_learning_analytics\logger;
 
 require(__DIR__ . '/../../config.php');
 
@@ -30,7 +31,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_login();
 
-global $PAGE, $USER, $DB;
+global $PAGE, $DB, $OUTPUT, $CFG;
 
 $url = new moodle_url('/local/extended_learning_analytics/index.php/reports/dashboard');
 $PAGE->set_url($url);
@@ -45,12 +46,32 @@ $PAGE->set_title($title);
 $output = $PAGE->get_renderer('local_learning_analytics');
 
 $PAGE->requires->css('/local/learning_analytics/static/styles.css?4');
-$mainoutput = $output->render_from_template('local_learning_analytics/course', [
-    'content' => dashboard::run()
-]);
+
+$PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/styles.css?3');
+
+$subpluginsboxes = [];
+
+$logger = new logger();
+$logger->run();
+
+$reports = \core_plugin_manager::instance()->get_plugins_of_type('elareport');
+foreach ($reports as $report) {
+    $pluginsize = 12;
+    $previewfile = "{$CFG->dirroot}/local/extended_learning_analytics/reports/{$report->name}/classes/preview.php";
+    if (file_exists($previewfile)) {
+        include_once($previewfile);
+        $previewClass = "elareport_{$report->name}\\preview";
+        $subpluginsboxes = array_merge($subpluginsboxes, ["<div class='col-lg-{$pluginsize}'>"], $previewClass::content(), ["</div>"]);
+    }
+}
+
+$ret = "<div class='container-fluid'>";
+$renderer = $PAGE->get_renderer('local_learning_analytics');
+$ret .= $renderer->render_output_list($subpluginsboxes);
+$ret .= "</div>";
 
 echo $output->header();
-echo $mainoutput;
+echo $ret;
 echo $output->footer();
 
 
