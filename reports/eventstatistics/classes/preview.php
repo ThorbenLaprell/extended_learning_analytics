@@ -78,6 +78,7 @@ class preview extends report_preview {
         }
 
         return [
+            '<h1 class="text">Eventstatistics</h1>',
             '<h3 class="text">Most logged events</h3>',
             $tabletypes,
         ];

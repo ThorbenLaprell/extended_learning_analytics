@@ -114,6 +114,7 @@ class preview extends report_preview {
         }
 
         return [
+            '<h1 class="text">Courseusage</h1>',
             '<h3 class="text">Most visited courses</h3>',
             $tabletypes,
             '<h3 class="text">Most visited Toplevel Course Categories</h3>',

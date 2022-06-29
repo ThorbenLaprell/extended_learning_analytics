@@ -175,6 +175,7 @@ class preview extends report_preview {
         $chart->get_yaxis(0, true)->set_label("Activity types");
 
         return [
+            '<h1 class="text">Activityusage</h1>',
             '<h3 class="text">Most visited activity</h3>',
             $tabletypes,
             '<h3 class="text">Most visited activity type</h3>',

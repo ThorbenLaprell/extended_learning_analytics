@@ -120,6 +120,7 @@ class preview extends report_preview {
         $plot->set_layout($layout);
         $plot->set_height(400);
         return [
+            '<h1 class="text">Weekheatmap</h1>',
             '<h3 class="text">Hits at daytime in week</h3>',
             $plot
         ];
