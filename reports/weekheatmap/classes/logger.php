@@ -64,7 +64,8 @@ class logger {
     public static function query_and_save_from_date_to_today($startdate) {
         $end = new \DateTime();
         $end->modify('today');
-        $end->modify('Monday this week');
+        $end->modify('Monday next week');
+        //$end->modify('+7d');
         $interval = new \DateInterval('P7D');
         $daterange = new \DatePeriod($startdate, $interval ,$end);
         foreach($daterange as $date){

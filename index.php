@@ -51,7 +51,7 @@ $PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/s
 
 $subpluginsboxes = [];
 
-$logger = new logger();
+$logger = new logger(); //TO BE REMOVED
 $logger->run();
 
 $reports = \core_plugin_manager::instance()->get_plugins_of_type('elareport');

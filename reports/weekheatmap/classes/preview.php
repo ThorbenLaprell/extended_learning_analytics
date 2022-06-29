@@ -74,8 +74,7 @@ class preview extends report_preview {
         $weeks = query_helper::query_weekly_activity();
 
         for ($d = 0; $d < 7; $d += 1) {
-            // we need to start the plot at the bottom (sun -> sat -> fri -> ...)
-            $dbweekday = (6 + $startOfWeek - $d) % 7; // 0 (Sun) -> 6 (Sat) -> 5 (Fri) -> ...
+            $dbweekday = (5 + $startOfWeek - $d) % 7;
             $daydata = [];
             $textdata = [];
             for ($h = 0; $h < 24; $h += 1) {
