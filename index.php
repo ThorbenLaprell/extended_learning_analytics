@@ -24,6 +24,7 @@
 
 use local_extended_learning_analytics\dashboard;
 use \local_extended_learning_analytics\logger;
+use \local_extended_learning_analytics\cleaner;
 
 require(__DIR__ . '/../../config.php');
 
@@ -53,6 +54,8 @@ $subpluginsboxes = [];
 
 $logger = new logger(); //TO BE REMOVED
 $logger->run();
+$cleaner = new cleaner(); //TO BE REMOVED
+$cleaner->run();
 
 $reports = \core_plugin_manager::instance()->get_plugins_of_type('elareport');
 foreach ($reports as $report) {

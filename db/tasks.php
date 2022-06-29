@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die();
 $tasks = [
     [
-        'classname' => 'local_extended_learning_analytics\task\run_query_helpers',
+        'classname' => 'local_extended_learning_analytics\task\elanalytics_logger',
         'blocking' => 0,
         'minute' => '0',
         'hour' => '0',
@@ -10,4 +10,13 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
+    [
+        'classname' => 'local_extended_learning_analytics\task\elanalytics_cleaner',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '0',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ]
 ];
