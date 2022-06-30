@@ -67,7 +67,7 @@ class preview extends report_preview {
         $weeks = query_helper::query_weekly_activity();
 
         $tabletypes = new table();
-        $tabletypes->set_header_local(['activities']);
+        $tabletypes->set_header([get_string('Activities', 'elareport_activityusage')]);
         $maxhits = (current($weeks))->hits;
 
         $i = 0;
@@ -99,7 +99,7 @@ class preview extends report_preview {
         $weeks3 = query_helper::query_dominant_activity_type();
 
         $tabletypes2 = new table();
-        $tabletypes2->set_header(['Most visited activity types']);
+        $tabletypes2->set_header([get_string('Most_visited_activity_types', 'elareport_activityusage')]);
         $maxhits = (current($weeks2))->hits;
         $i = 0;
         foreach ($weeks2 as $item) {
@@ -120,7 +120,7 @@ class preview extends report_preview {
         }
 
         $tabletypes3 = new table();
-        $tabletypes3->set_header(['Most visited activity types']);
+        $tabletypes3->set_header([get_string('Most_created_activity_types', 'elareport_activityusage')]);
         $maxhits = (current($weeks3))->modulecount;
         $i = 0;
         foreach ($weeks3 as $item) {
@@ -163,26 +163,26 @@ class preview extends report_preview {
                 array_push($activitiesname2, $week->name);
             }
         }
-        $sales2 = new \core\chart_series('Most visited activity types', $activitiescount2);
-        $expenses2 = new \core\chart_series('Most created activity types', $expensescount2);
+        $sales2 = new \core\chart_series(get_string('Visited_activity_types', 'elareport_activityusage'), $activitiescount2);
+        $expenses2 = new \core\chart_series(get_string('Created_activity_types', 'elareport_activityusage'), $expensescount2);
         $labels2 = $activitiesname2;
         $chart = new \core\chart_bar();
         $chart->set_horizontal(true);
         $chart->add_series($sales2);
         $chart->add_series($expenses2);
         $chart->set_labels($labels2);
-        $chart->get_xaxis(0, true)->set_label("relative hits/instances in %");
-        $chart->get_yaxis(0, true)->set_label("Activity types");
+        $chart->get_xaxis(0, true)->set_label(get_string('Relative_hits', 'elareport_activityusage'));
+        $chart->get_yaxis(0, true)->set_label(get_string('Activity_types', 'elareport_activityusage'));
 
         return [
             '<h1 class="text">Activityusage</h1>',
-            '<h3 class="text">Most visited activity</h3>',
+            '<h3 class="text">' . get_string('Most_visited_activity', 'elareport_activityusage') . '</h3>',
             $tabletypes,
-            '<h3 class="text">Most visited activity type</h3>',
+            '<h3 class="text">' . get_string('Most_visited_activity_types', 'elareport_activityusage') . '</h3>',
             $tabletypes2,
-            '<h3 class="text">Most used activity type</h3>',
+            '<h3 class="text">' . get_string('Most_created_activity_types', 'elareport_activityusage') . '</h3>',
             $tabletypes3,
-            '<h3 class="text">Activity type chart</h3>',
+            '<h3 class="text">' . get_string('Activity_type_chart', 'elareport_activityusage') . '</h3>',
             $chart
         ];
     }

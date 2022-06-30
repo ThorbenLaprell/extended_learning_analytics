@@ -14,7 +14,6 @@ class elanalytics_logger extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return "elanalytics_logger";
         return get_string('elanalytics_logger', 'local_extended_learning_analytics');
     }
 

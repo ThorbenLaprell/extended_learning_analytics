@@ -55,7 +55,7 @@ foreach (core_plugin_manager::instance()->get_plugins_of_type('elareport') as $p
     $plugin->load_settings($ADMIN, 'local_extended_learning_analytics', $hassiteconfig);
 }
 
-$ADMIN->add('reports',
+$ADMIN->add('reports', //remove?
     new admin_externalpage (
         'local_extended_learning_analytics',
         "Extended learning Analytics",

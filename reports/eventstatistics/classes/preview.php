@@ -57,7 +57,7 @@ class preview extends report_preview {
         $events = query_helper::query_event_activity();
 
         $tabletypes = new table();
-        $tabletypes->set_header(['Lanalytics Events logged']);
+        $tabletypes->set_header([get_string('Lanalytics_Events_logged', 'elareport_eventstatistics')]);
         $maxhits = (current($events))->hits;
         $i = 0;
         foreach ($events as $item) {
@@ -78,8 +78,8 @@ class preview extends report_preview {
         }
 
         return [
-            '<h1 class="text">Eventstatistics</h1>',
-            '<h3 class="text">Most logged events</h3>',
+            '<h1 class="text">' . get_string('Eventstatistics', 'elareport_eventstatistics') . '</h1>',
+            '<h3 class="text">' . get_string('Most_logged_events', 'elareport_eventstatistics') . '</h3>',
             $tabletypes,
         ];
     }

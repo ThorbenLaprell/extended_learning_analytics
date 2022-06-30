@@ -24,11 +24,9 @@
  */
 
 $string['pluginname'] = 'Local extended_learning_analytics';
-$string['local_extend_learning_analytics'] = 'Local extended_learning_analytics';
-$string['navigation_link'] = 'extended_learning_analytics';
-$string['navigationlink'] = 'extended_learning_analytics';
 $string['general_settings'] = 'General Settings';
-$string['setting_reports_to_show'] = 'Reports to show';
-$string['setting_reports_to_log'] = 'Reports to log';
 $string['setting_lifetimeInWeeks'] = 'Report Lifetime in Weeks';
-$string['elanalytics_logger'] = 'Extended Learning Analytics Tasks';
+$string['component'] = 'local_extended_learning_analytics';
+$string['elanalytics_cleaner'] = 'elanalytics_cleaner';
+$string['elanalytics_logger'] = 'elanalytics_logger';
+$string['navigation_link'] = 'extended_learning_analytics';

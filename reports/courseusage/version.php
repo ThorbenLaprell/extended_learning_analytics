@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'elareport_courseusage';
+$plugin->component = get_string('component', 'elareport_courseusage');
 
 $plugin->version = '2018052501';
 $plugin->requires = '2017111302';

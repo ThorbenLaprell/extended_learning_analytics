@@ -66,7 +66,7 @@ class preview extends report_preview {
         $weeks = query_helper::query_course_activity();
 
         $tabletypes = new table();
-        $tabletypes->set_header_local(['courses']);
+        $tabletypes->set_header([get_string("Courses1", "elareport_courseusage")]);
         $maxhits = (current($weeks))->hits;
         $i = 0;
         foreach ($weeks as $item) {
@@ -91,7 +91,7 @@ class preview extends report_preview {
         $weeks2 = query_helper::query_course_category_activity();
 
         $tabletypes2 = new table();
-        $tabletypes2->set_header_local(['courses']);
+        $tabletypes2->set_header([get_string("Courses2", "elareport_courseusage")]);
         $maxhits = (current($weeks2))->hits;
         $i = 0;
         foreach ($weeks2 as $item) {
@@ -114,10 +114,10 @@ class preview extends report_preview {
         }
 
         return [
-            '<h1 class="text">Courseusage</h1>',
-            '<h3 class="text">Most visited courses</h3>',
+            '<h1 class="text">' . get_string("Courseusage", "elareport_courseusage") . '</h1>',
+            '<h3 class="text">' . get_string("Most_visited_courses", "elareport_courseusage") . '</h3>',
             $tabletypes,
-            '<h3 class="text">Most visited Toplevel Course Categories</h3>',
+            '<h3 class="text">' . get_string("Most_visited_Toplevel_Course_Categories", "elareport_courseusage") . '</h3>',
             $tabletypes2
         ];
     }

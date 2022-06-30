@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->component = 'local_extended_learning_analytics';
+$plugin->component = get_string('component', 'local_extended_learning_analytics');
 
 $plugin->version = 2022060801;
 $plugin->release = 'v0.1.0';

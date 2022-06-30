@@ -56,22 +56,6 @@ class preview extends report_preview {
 
         $texts = [];
 
-        $shapes = [
-            [ // Line showing the start of the lecture.
-                'type' => 'line',
-                'xref' => 'x',
-                'yref' => 'paper',
-                'x0' => 0.5,
-                'x1' => 0.5,
-                'y0' => -0.07,
-                'y1' => 1,
-                'line' => [
-                    'color' => 'rgb(0, 0, 0)',
-                    'width' => 1.5
-                ]
-            ]
-        ];
-
         $ymax = 1;
 
         foreach ($weeks as $week) {
@@ -82,7 +66,7 @@ class preview extends report_preview {
         $xmin = 0;
         for ($i=0; $i<count($weeks); $i++) {
             if($weeks[$i]->clicks > 0) {
-                $xmin = $i-1;
+                $xmin = $i;
                 break;
             }
         }
@@ -251,8 +235,8 @@ class preview extends report_preview {
         $plot->set_height(400);
 
         return [
-            '<h1 class="text">Usgaestatistics</h1>',
-            '<h3 class="text">Visits per Week</h3>',
+            '<h1 class="text">' . get_string('Usagestatistics', 'elareport_usagestatistics') . '</h1>',
+            '<h3 class="text">' . get_string('Visits_per_week', 'elareport_usagestatistics') . '</h3>',
             $plot
         ];
     }
