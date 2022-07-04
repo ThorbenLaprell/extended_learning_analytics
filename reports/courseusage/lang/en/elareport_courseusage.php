@@ -26,6 +26,6 @@ $string['pluginname'] = 'Extended Learning Analytics Courseusage';
 $string['component'] = 'elareport_courseusage';
 $string['Courseusage'] = 'Courseusage';
 $string['Most_visited_courses'] = 'Most visited courses';
-$string['Most_visited_Toplevel Course Categories'] = 'Most visited Toplevel Course Categories';
+$string['Most_visited_Toplevel_Course_Categories'] = 'Most visited Toplevel Course Categories';
 $string['Courses1'] = 'Courses';
 $string['Courses2'] = 'Courses';
