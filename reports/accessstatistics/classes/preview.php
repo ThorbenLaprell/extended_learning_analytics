@@ -22,13 +22,13 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- namespace elareport_usagestatistics;
+ namespace elareport_accessstatistics;
 
 defined('MOODLE_INTERNAL') || die();
 
 use \local_learning_analytics\local\outputs\plot;
 use \local_extended_learning_analytics\report_preview;
-use elareport_usagestatistics\query_helper;
+use elareport_accessstatistics\query_helper;
 
 class preview extends report_preview {
 
@@ -235,8 +235,8 @@ class preview extends report_preview {
         $plot->set_height(400);
 
         return [
-            '<h1 class="text">' . get_string('Usagestatistics', 'elareport_usagestatistics') . '</h1>',
-            '<h3 class="text">' . get_string('Visits_per_week', 'elareport_usagestatistics') . '</h3>',
+            '<h1 class="text">' . get_string('accessstatistics', 'elareport_accessstatistics') . '</h1>',
+            '<h3 class="text">' . get_string('Visits_per_week', 'elareport_accessstatistics') . '</h3>',
             $plot
         ];
     }

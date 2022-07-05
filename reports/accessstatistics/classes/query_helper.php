@@ -22,7 +22,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace elareport_usagestatistics;
+namespace elareport_accessstatistics;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -42,7 +42,7 @@ class query_helper {
         AS WEEK,
         SUM(h.hits) AS clicks,
         h.date AS date
-        FROM {elanalytics_usagestatistics} h
+        FROM {elanalytics_accessstatistics} h
         GROUP BY week
         ORDER BY week;
 SQL;

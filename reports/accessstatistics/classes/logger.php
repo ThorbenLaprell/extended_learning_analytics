@@ -22,11 +22,11 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace elareport_usagestatistics;
+namespace elareport_accessstatistics;
 
 defined('MOODLE_INTERNAL') || die();
 
-use elareport_usagestatistics\query_helper;
+use elareport_accessstatistics\query_helper;
 use stdClass;
 
 class logger {
@@ -39,8 +39,8 @@ class logger {
             $begindate->format('Ymd');
             $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
             $begindate->modify('-' . $lifetimeInWeeks . ' weeks');
-            if($DB->record_exists('elanalytics_usagestatistics', array())) {
-                $inputs = $DB->get_records('elanalytics_usagestatistics');
+            if($DB->record_exists('elanalytics_accessstatistics', array())) {
+                $inputs = $DB->get_records('elanalytics_accessstatistics');
                 $max = self::findMaxDate($inputs);
                 $begindate = new \DateTime($max);
             }
@@ -87,15 +87,15 @@ class logger {
         global $DB;
         $query = <<<SQL
         SELECT *
-        FROM {elanalytics_usagestatistics} h
+        FROM {elanalytics_accessstatistics} h
         WHERE h.date = ?
 SQL;
         $record = $DB->get_record_sql($query, [$entry->date]);
         if($record != false) {
             $entry->id = $record->id;
-            $DB->update_record('elanalytics_usagestatistics', $entry);
+            $DB->update_record('elanalytics_accessstatistics', $entry);
         } else {
-            $DB->insert_record('elanalytics_usagestatistics', $entry);
+            $DB->insert_record('elanalytics_accessstatistics', $entry);
         }
     }
 }

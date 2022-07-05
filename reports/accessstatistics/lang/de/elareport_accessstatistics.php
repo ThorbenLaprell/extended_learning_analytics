@@ -15,16 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version info for the Sections Report
+ * Strings for lareport_coursedashboard
  *
  * @package     local_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = get_string('component', 'elareport_usagestatistics');
-
-$plugin->version = '2018052501';
-$plugin->requires = '2017111302';
+$string['pluginname'] = 'Extended Learning Analytics Access Statistics';
+$string['component'] = 'elareport_accessstatistics';
+$string['accessstatistics'] = 'Accessstatistics';
+$string['Visits_per_week'] = 'Visits per week';

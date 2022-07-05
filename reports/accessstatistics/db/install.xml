@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/extended_learning_analytics/reports/usagestatistics/db" VERSION="20220407" COMMENT="XMLDB file for Moodle elanalytics"
+<XMLDB PATH="local/extended_learning_analytics/reports/accessstatistics/db" VERSION="20220407" COMMENT="XMLDB file for Moodle elanalytics"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="elanalytics_usagestatistics" COMMENT="Log table">
+    <TABLE NAME="elanalytics_accessstatistics" COMMENT="Log table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

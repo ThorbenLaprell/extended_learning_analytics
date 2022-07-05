@@ -22,7 +22,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Extended Learning Analytics Usage Statistics';
-$string['component'] = 'elareport_usagestatistics';
-$string['Usagestatistics'] = 'Usagestatistics';
+$string['pluginname'] = 'Extended Learning Analytics Accessstatistics Statistics';
+$string['component'] = 'elareport_accessstatistics';
+$string['accessstatistics'] = 'Accessstatistics';
 $string['Visits_per_week'] = 'Visits per week';
