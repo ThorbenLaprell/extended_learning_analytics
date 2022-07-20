@@ -30,13 +30,6 @@ class query_helper {
 
     public static function query_weekly_activity() : array {
         global $DB;
-
-        $startdate = new \DateTime();
-        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
-        $startdate->modify('-' . $lifetimeInWeeks . ' weeks');
-        $startdate->modify('Monday this week'); // Get start of week.
-        $mondaytimestamp = $startdate->format('U');
-
         $query = <<<SQL
         SELECT CONCAT(date, "-", hour) AS heatpoint,
             SUM(hits) AS value
@@ -45,7 +38,7 @@ class query_helper {
         ORDER BY heatpoint
 SQL;
 
-        return $DB->get_records_sql($query, [$reportid]);
+        return $DB->get_records_sql($query, []);
     }
 
     public static function query_activity_at_weekX($date) : array {

@@ -61,13 +61,6 @@ class preview extends report_preview {
             $ystrs[] = get_string($day, 'calendar');
         }
 
-        $date = new \DateTime();
-        $date->modify('-1 week');
-        $now = $date->getTimestamp();
-        $date->modify('-28 week');
-
-        $date->modify('Monday this week'); // Get start of week.
-
         $endoflastweek = new \DateTime();
         $endoflastweek->modify('Sunday last week');
 
