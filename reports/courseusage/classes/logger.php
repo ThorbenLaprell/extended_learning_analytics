@@ -85,9 +85,7 @@ SQL;
             $entry->date = $formatedDate;
             $entry->courseid = $courseid->id;
             $entry->hits = current(query_helper::query_activity_at_dayXInCourse($date, $courseid->id))->hits;
-            if($entry->hits>0) {
-                self::insert_or_update($entry);
-            }
+            self::insert_or_update($entry);
         }
     }
 
