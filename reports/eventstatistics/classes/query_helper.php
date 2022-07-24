@@ -57,12 +57,10 @@ SQL;
         $endtimestamp = $timestamp + 86400;
 
         $query = <<<SQL
-        SELECT l.eventid AS eventid, COUNT(*) AS hits
-        FROM {logstore_lanalytics_log} l
-        JOIN {logstore_lanalytics_evtname} e
-        ON l.eventid = e.id
-        WHERE l.timecreated >= ?
-        AND l.timecreated < ?
+        SELECT eventid AS eventid, COUNT(*) AS hits
+        FROM {logstore_lanalytics_log}
+        WHERE timecreated >= ?
+        AND timecreated < ?
         GROUP BY eventid
         ORDER BY hits DESC
 SQL;
