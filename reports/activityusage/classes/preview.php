@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version info for the Sections report
+ * Version details.
  *
- * @package     local_learning_analytics
+ * @package     local_extended_learning_analytics
  * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- namespace elareport_activityusage;
+namespace elareport_activityusage;
 
 defined('MOODLE_INTERNAL') || die();
 

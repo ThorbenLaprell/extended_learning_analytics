@@ -37,10 +37,8 @@ global $PAGE, $DB, $OUTPUT, $CFG;
 $url = new moodle_url('/local/extended_learning_analytics/index.php/reports/dashboard');
 $PAGE->set_url($url);
 
-// Header of page (we simply use the course name to be consitent with other pages)
 $PAGE->set_pagelayout('report');
 
-// title of page.
 $title = get_string('navigation_link', 'local_extended_learning_analytics');
 $PAGE->set_title($title);
 
@@ -51,11 +49,6 @@ $PAGE->requires->css('/local/learning_analytics/static/styles.css?4');
 $PAGE->requires->css('/local/learning_analytics/reports/coursedashboard/static/styles.css?3');
 
 $subpluginsboxes = [];
-
-$logger = new logger(); //TO BE REMOVED
-$logger->run();
-$cleaner = new cleaner(); //TO BE REMOVED
-$cleaner->run();
 
 $reports = \core_plugin_manager::instance()->get_plugins_of_type('elareport');
 foreach ($reports as $report) {

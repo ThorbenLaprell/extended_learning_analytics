@@ -15,12 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'tool_uploadcoursecategory', language 'en', branch 'MOODLE_22_STABLE'
+ * Version details.
  *
- * @package    local
- * @subpackage local_extend_learning_analytics
- * @copyright  2021 Thorben Laprell
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_extended_learning_analytics
+ * @copyright   Lehr- und Forschungsgebiet Ingenieurhydrologie - RWTH Aachen University
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Local extended_learning_analytics';
