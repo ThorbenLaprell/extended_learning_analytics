@@ -42,13 +42,12 @@ class preview extends report_preview {
         $now = $date->getTimestamp();
         $date->modify('-' . $lifetimeInWeeks . ' week');
 
-        $date->modify('Monday this week'); // Get start of week.
+        $date->modify('Monday this week');
 
         $endoflastweek = new \DateTime();
         $endoflastweek->modify('Sunday last week');
 
         $weeks = query_helper::query_weekly_activity();
-        //$weeks = array_slice($weeks, count($weeks) - $lifetimeInWeeks);
 
         $plot = new plot();
         $x = [];
@@ -74,13 +73,6 @@ class preview extends report_preview {
 
         $tickvals = [];
         $ticktext = [];
-
-        $dateformat = get_string('strftimedate', 'langconfig');
-        $thousandssep = get_string('thousandssep', 'langconfig');
-        $decsep = get_string('decsep', 'langconfig');
-
-        $tstrweek = get_string('week', 'lareport_coursedashboard');
-        $strclicks = get_string('clicks', 'lareport_coursedashboard');
 
         $date->modify(($xmin) . ' week');
 

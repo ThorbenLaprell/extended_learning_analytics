@@ -35,17 +35,6 @@ class preview extends report_preview {
 
     const X_MIN = -1;
     const X_MAX = 30;
-    private static $markercolorstext = [
-        'quiz' => 'green',
-        'resource' => 'blue',
-        'page' => 'red',
-        'url' => 'orange',
-        'forum' => 'yellow',
-        'wiki' => 'yellow',
-        'assign' => 'navy',
-        'pdfannotator' => 'pdfred',
-    ];
-    private static $markercolortextdefault = 'gray';
 
     public static function content(): array {
         return self::activiyoverweeks();
@@ -55,9 +44,10 @@ class preview extends report_preview {
         global $DB, $CFG;
         $CFG->chart_colorset = ['#6495ED', '#B0C4DE', '#B0E0E6', '#5F9EA0'];
         $date = new \DateTime();
+        $lifetimeInWeeks = get_config('local_extended_learning_analytics', 'lifetimeInWeeks');
         $date->modify('-1 week');
         $now = $date->getTimestamp();
-        $date->modify('-28 week');
+        $date->modify('-' . ($lifetimeInWeeks - 1) . ' week');
 
         $date->modify('Monday this week'); // Get start of week.
 
@@ -89,7 +79,7 @@ class preview extends report_preview {
                     table::fancyNumberCell(
                         $hits,
                         $maxhits,
-                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                        'red'
                     )
                 ]);
             }
@@ -112,7 +102,7 @@ class preview extends report_preview {
                     table::fancyNumberCell(
                         $hits,
                         $maxhits,
-                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                        'red'
                     )
                 ]);
                 $i++;
@@ -133,7 +123,7 @@ class preview extends report_preview {
                     table::fancyNumberCell(
                         $hits,
                         $maxhits,
-                        self::$markercolorstext['page'] ?? self::$markercolortextdefault
+                        'red'
                     )
                 ]);
                 $i++;
